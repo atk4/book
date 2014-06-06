@@ -190,9 +190,6 @@ Create a new PHP file called "cmd.php"::
     agiletoolkit-overview/model
     agiletoolkit-overview/controller
     agiletoolkit-overview/application
-    agiletoolkit-overview/what-is-cakephp-why-use-it
-    agiletoolkit-overview/understanding-model-view-controller
-    agiletoolkit-overview/where-to-get-help
 
 
 .. meta::
