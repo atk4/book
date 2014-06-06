@@ -3,10 +3,10 @@
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
-SPHINXBUILD   = sphinx-build
+SPHINXBUILD   = /usr/lib/python-exec/python2.7/sphinx-build
 PAPER         =
 BUILDDIR      = ../build
-PYTHON        = python
+PYTHON        = python2.7
 LANG          = en
 
 # Internal variables.
