@@ -1,6 +1,7 @@
 Agile Toolkit Overview
 ######################
 
+
 To know where framework is heading, you must know where it is coming from. Agile Toolkit is a rewrite of the AModules3 framework which dates back to 1999 and was maintained by the same author, meaning that Agile Toolkit have lived through at least 4 generation and have established a very solid foundation.
 
 Main Qualities of Agile Toolkit
@@ -15,6 +16,10 @@ and accepted that no fundamental changes are longer necessary. You can
 safely invest your time into learning Agile Toolkit knowing that the
 next release is not going to turn on it's head.
 
+Additionally - the object-oriented nature of Agile Toolkit allows to maintain
+a one-release compatibility. For example, application written for 4.2 will
+also work nicely on 4.3 with a help of "Compatbility" controller.
+
 Object-oriented, not Class-oriented
 '''''''''''''''''''''''''''''''''''
 
@@ -26,18 +31,13 @@ Interface manipulation.
 Performance and Flexibility
 '''''''''''''''''''''''''''
 
-By taking advantage of a quick template engine and widget library, Agile
-Toolkit remains very swift and flexible at the same time. It creates
+The major focus of Agile Toolkit is at speeding up development speed,
+however Agile Toolkit remains very swift and flexible at the same time.
+It creates
 quite a few UI objects as it works with your page, but it's a manageable
 amount which would not slow your application more than an extra SQL
 query.
 
-Giving you a tool, not a swiss-army knife
-'''''''''''''''''''''''''''''''''''''''''
-
-Instead of trying to offer every problem, Agile Toolkit delivers a good
-selection of base tools. A skilled developer can use the tools to solve
-any problem.
 
 Fully integrated with a CSS framework
 '''''''''''''''''''''''''''''''''''''
@@ -49,9 +49,9 @@ master you will be able to solve any possible problem.
 A new web platform
 ------------------
 
-When applications were switching from DOS to Windows they discovered
-that they no longer need to worry about drawing dialog boxes on the
-screen. a windowing system can do it more efficiently and more
+In 1990, when applications were switching from DOS to Windows they discovered
+that they no longer need to worry about drawing dialog boxes, menus or buttons on the
+screen. A modern windowing systems do those things fro applications more efficiently and more
 consistently.
 
 Agile Toolkit is the same to your web application. Not only it is a
@@ -110,9 +110,9 @@ SQL table.
 SQL Awesomeness
 ---------------
 
-Practically most frameworks let you use SQL. Not many of them are doing
-good job with giving you object-oriented data modeling component. Lately
-you get one, but you still need to write your queries in SQL.
+Most MVC frameworks offer a way to abstract SQL. Often they offer
+all-or-nothing solution.
+
 
 Agile Toolkit features a clever objective data and relationship manager
 with support for all SQL server features including joins, sub-selects,
@@ -188,10 +188,9 @@ Create a new PHP file called "cmd.php"::
     agiletoolkit-overview/design-goals
     agiletoolkit-overview/view
     agiletoolkit-overview/model
-    agiletoolkit-overview/controller
     agiletoolkit-overview/application
 
 
 .. meta::
-    :title lang=en: CakePHP Overview
+    :title lang=en: Agile Toolkit Overview
     :keywords lang=en: web application framework,model view controller,object oriented programming,piece of cake,cookbook,functionality,xml,cakephp

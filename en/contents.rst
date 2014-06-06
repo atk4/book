@@ -6,6 +6,7 @@ Contents
 
    index
    agiletoolkit-overview
+   core-features
    controllers
    views
    models

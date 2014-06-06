@@ -11,14 +11,8 @@ features into Model object:
 
 .. figure:: ./model.png
 
-    - Field Definitions
-    - Behaviour
-    - Hooks
-    - Controller
-    - ID
-    - Data
-    - Relations
-    - Conditions
+    Field Definitions, Behaviour, Hooks, Controller, ID, Data, Relations,
+    Conditions
 
 
 

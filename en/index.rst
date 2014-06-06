@@ -1,7 +1,4 @@
-.. CakePHP Cookbook documentation master file, created by
-   sphinx-quickstart on Tue Jan 18 12:54:14 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+.. Agile Toolkit Book documentation master file
 
 Welcome
 #######
@@ -124,14 +121,8 @@ Toolkit into your existing code structure you might face some difficulties.
 For the best experience start a new application and improve it as-you-learn.
 
 
-Getting Help
-============
-
-If you're stuck, there are a number of places :doc:`you can get help
-</cakephp-overview/where-to-get-help>`.
-
 
 
 .. meta::
-    :title lang=en: .. CakePHP Cookbook documentation master file, created by
+    :title lang=en: .. Agile Toolkit Documentation
     :keywords lang=en: doc models,documentation master,presentation layer,documentation project,quickstart,original source,sphinx,liking,cookbook,validity,conventions,validation,cakephp,accuracy,storage and retrieval,heart,blog,project hope
