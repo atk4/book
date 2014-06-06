@@ -109,8 +109,7 @@ If the code seems a bit overwhelming for you, do not worry. We will go
 through all the concepts here gradually in this documentation. Do, however,
 try it out in the local copy of Agile Toolkit.
 
-
-.. warning::
+.. TODO::
 
     TODO: insert video / demo
 

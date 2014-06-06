@@ -1,4 +1,4 @@
-# Global configuration information used across all the 
+# Global configuration information used across all the
 # translations of documentation.
 #
 
@@ -29,18 +29,18 @@ source_suffix = '.rst'
 master_doc = 'contents'
 
 # General information about the project.
-project = u'CakePHP Cookbook'
-copyright = u'2014, Cake Software Foundation, Inc'
+project = u'Agile Toolkit Book'
+copyright = u'2014, Agile Toolkit Ltd'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = '2.x'
+version = '4.3'
 
 # The full version, including alpha/beta/rc tags.
-release = '2.x'
+release = '4.3'
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -98,7 +98,7 @@ html_theme_path = ['../themes']
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
-html_short_title = u'Cookbook 2.x'
+html_short_title = u'AgileToolkit 4.3'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -158,7 +158,7 @@ html_sidebars = {
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'CakePHPCookbookdoc'
+htmlhelp_basename = 'ATK4Doc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -172,8 +172,8 @@ latex_font_size = '11pt'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('pdf-contents', 'CakePHPCookbook.tex', u'CakePHP Cookbook Documentation',
-   u'Cake Software Foundation', 'manual'),
+  ('pdf-contents', 'ATK4Doc.tex', u'Agile Toolkit Documentation',
+   u'Agile Toolkit Ltd', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
