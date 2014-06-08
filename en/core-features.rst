@@ -14,6 +14,9 @@ Documentation on Abstract Core Classes
     :maxdepth: 1
 
     core-features/objects
+    core-features/session
+    core-features/exceptions
     core-features/hooks
+    core-features/dynamic-methods
     core-features/namespaces
 

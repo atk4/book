@@ -442,4 +442,97 @@ These enable you to run code at specific points in the execution flow:
       called when POST data is received from any Form. (The Form object
       actually uses this hook to process POST data).
 
+.. todo: Review the following section, as it came from different book.
+
+Hooks
+~~~~~
+
+Hooks is a callback implementation in Agile Toolkit. Hooks are defined
+throughout core classes and other controllers can use them to inject
+code.
+
+For example:
+
+::
+
+    // Add gettext() support into the app
+    $this->api->addHook('localizeString',function($obj,$str){
+        return _($str);
+    });
+
+The localizeString hook is called by many different objects and through
+adding a hook you can intercept the calls.
+
+::
+
+    $obj = $this->add('MyClass');
+    $obj->addHook('foo',function($o){ return 1; });
+    $obj->addHook('foo',function($o){ return 2; });
+    $res = $obj->hook('foo'); // array(1, 2);
+
+This example demonstrates how multiple hooks are called and how they
+return values. You can use method breakHook to override return value.
+
+::
+
+    $obj = $this->add('MyClass');
+    $obj->addHook('foo',function($o){ return 1; });
+    $obj->addHook('foo',function($o){ $o->breakHook('bar'); });
+    $res = $obj->hook('foo'); // 'bar';
+
+You should have noticed that all the hook receive reference to $obj as a
+first argument. You can specify more arguments either through hook() or
+addHook()
+
+::
+
+    $obj->addHook('foo',function($o,$a,$b,$c){
+        return array($a,$b,$c);
+    }, array(3));
+    $res = $obj->hook('foo',array(1,2)); // array(array(1,2,3));
+
+When calling addHook() the fourth argument is a priority. Default
+priority is 5, but by setting it lower you can have your hook called
+faster.
+
+::
+
+    $obj = $this->add('MyClass');
+    $obj->addHook('foo',function($o){ return 1; });
+    $obj->addHook('foo',function($o){ return 2; },3);
+    $res = $obj->hook('foo'); // array(2, 1);
+
+Note: in this example, the "3" was passed as 3rd argument not fourth.
+addHook automatically recognize non-array value as a priority if array
+with argments is omitted. **Argument** omission is often used in Agile
+Toolkit methods.
+
+When you are building object and you wish to make it extensible, adding
+a few hooks is always a good thing to do. You can also check the
+presence of any hooks and turn off default functionality:
+
+::
+
+    function accountBlocked(){
+        if(!$this->hook('accountBlocked'))
+            $this->email('Your account have been blocked');
+    }
+
+Without any hooks, hook() will return empty array.
+
+Finally you can call removeHook to remove all hooks form a spot.
+
+::
+
+    $obj = $this->add('MyClass');
+    $obj->addHook('foo',function($o){ return 1; });
+    $obj->removeHook('foo');
+    $res = $obj->hook('foo'); // array();
+
+Note: If your object implements handlers for a few hooks and sets them
+inside init(), then after cloning such an object, it will not have the
+handlers cloned along with the object. Use of newInstance() should work
+fine.
+
+d
 

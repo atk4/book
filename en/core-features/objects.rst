@@ -179,28 +179,6 @@ require you to call ``setController('Foo')`` if you need to change the
 default. This will be covered in the class's documentation.
 
 
-Setting Default Properties
---------------------------
-
-In your object, you might set a number of useful properties::
-
-    class View_MyBook extends View {
-        protected $cover_color = 'red';
-
-        function init() {
-            parent::init();
-
-            echo $this->cover_color;    // outputs 'red'
-        }
-    }
-
-Agile Toolkit allows you to change the default value of this property, when
-you add the object::
-
-    $this->add('View_MyBook', [ 'cover_color' => 'blue' ]);
-
-This approach is a good substitute to passing arguments into a constructor.
-
 .. chaining
 
 Chaining Object Methods
@@ -416,8 +394,8 @@ checks that you're adding the object to a password field.
         }
     }
 
-Locating Your Code Inside Objects
----------------------------------
+Smart Code Placement
+--------------------
 
 In addition to the ``init()`` method, any ``render()`` method within a
 view will be called as the Runtime Object Tree is rendered.
@@ -428,98 +406,41 @@ Here are some rules of thumb:
    it inside ``init()``
 2. If code needs to iterate through Model data, place it inside a
    ``render()`` method
-
-                                                                                                                                                                               TODO:
-                                                                                                                                                                               I
-                                                                                                                                                                               don't
-                                                                                                                                                                               understand
-                                                                                                                                                                               this
-                                                                                                                                                                               -
-                                                                                                                                                                               setModel()
-                                                                                                                                                                               is
-                                                                                                                                                                               a
-                                                                                                                                                                               method
-                                                                                                                                                                               call
-                                                                                                                                                                               -
-                                                                                                                                                                               how
-                                                                                                                                                                               can
-                                                                                                                                                                               you
-                                                                                                                                                                               put
-                                                                                                                                                                               code
-                                                                                                                                                                               inside
-                                                                                                                                                                               it??
-
 3. If code needs to add more sub-elements but must access database or
    model structure for it - place it inside setModel().
 
-                                                                                                                                                                               TODO:
-                                                                                                                                                                               can
-                                                                                                                                                                               we
-                                                                                                                                                                               clarify
-                                                                                                                                                                               please?
-                                                                                                                                                                               When
-                                                                                                                                                                               is
-                                                                                                                                                                               render()
-                                                                                                                                                                               called,
-                                                                                                                                                                               and
-                                                                                                                                                                               when
-                                                                                                                                                                               is
-                                                                                                                                                                               it
-                                                                                                                                                                               not
-                                                                                                                                                                               called?
-                                                                                                                                                                               I
-                                                                                                                                                                               find
-                                                                                                                                                                               this
-                                                                                                                                                                               confusing
-                                                                                                                                                                               as
-                                                                                                                                                                               it
-                                                                                                                                                                               stands.
+Depending on your situation you can also re-define
+:php:meth:`AbstractView::recursiveRender`. This method is called before
+children's render is executed. See :def:`rendering` for more information.
 
-Keep in mind that ``init()`` will be called whenever part of your page
-is redrawn via AJAX, but ``render()`` won't. If you are executing an
-expensive CURL request, for example, it will be much more efficient to
-put it inside ``render()``.
+In some requests (see `request types`) your page and objects may be
+initialized but never rendered. This is the primary reason to move
+heavy business logic from init() to render()
 
 Configuring Object Properties
 -----------------------------
 
 Many objects have properties with default values. When you are setting
 up a new object you can configure it at runtime by passing in an array
-of property values as the second argument to ``add()``:
+of property values as the second argument to ``add()``::
 
-::
+    $password->add('StrengthChecker', [ 'default_text' => 'Secure Password Please!' ] );
 
-    $password->add(
-        'StrengthChecker',
-        array('default_text' => 'Secure Password Please!')
-    );
-
-A common use for properties is overriding a default class name:
-
-::
+A common use for properties is overriding a default class name::
 
     // Use CRUD with a custom Grid class
 
-    $page->add(
-        'CRUD',
-        array('grid_class'=>'MyGrid')
-    )->setModel('User');
+    $page
+        ->add('CRUD', [ 'grid_class'=>'MyGrid' ] )
+        ->setModel('User');
 
-Where a property is frequently set at runtime, classes often provide a
-``set()`` wrapper which you can chain with your ``add()`` call:
+When setting a property takes considerable CPU time, you should create a
+setter for this property. This will allow you to call the method from
+`render()` to optimize initialization phase. A good example is `setModel()`
+or `setSource()`.
 
-::
-
-    $password->add('StrengthChecker')
-        ->setDefaultText('Secure Password Please');
-
-
-Wrappers are also handy when you need to configure a nested object:
-
-::
-
-    $form->setModel('User');
-    $form->getElement('email')->setCaption('Your Email');
+Wrappers are also handy when you need to provide reference to another object,
+which may only be added at a later time.
 
 Cloning Objects & newInstance()
 -------------------------------
@@ -550,97 +471,45 @@ are added. For example, you might take your regular Model and add a new
 How To Use newInstance()
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you call ``$book->newInstance()`` it will create a new object of a
-same class (``Model_Book``). The new instance, however, will not have
-the added author join. This can be useful in some cases when you want to
-work with a copy of a model:
+If you call ``$book->newInstance()`` it will not copy any related object
+which you might have manually specified::
 
-::
+    $box = $this->add('View_Box');
+    $box->add('HelloWorld');
 
-    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    TODO: we need to clarify, I think.  How is
-    this different from just using add()?
-    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    $box2 = $box->newInstance();
 
-    function duplicate()
-    {
-        return $this->newInstance()->set($this->get())->save();
-    }
+This wil render 2 boxes, but only one will contain HelloWorld. Here is
+slightly different approach::
 
-This example implements a generic duplication method. It will create a
-new Model of a same class, copy in the data from the current Model into
-new one and call save.
+    class View_HelloBox extends View_Box {
+        function init() {
+            parent::init();
 
-Cloning Objects
-~~~~~~~~~~~~~~~
-
-When you use the PHP ``clone`` statement the whole object is duplicated
-into an independent variable.
-
-::
-
-    $book_archive = clone $book;
-
-    $book_archive->addCondition('is_archive',true);
-    $book->addCondition('is_archive',false);
-
-    $this->add('Grid')->setModel('book');
-    $this->add('Grid')->setModel('book_archive');
-
-This code will display two grids - one for regular books and another for
-archived. Because objects are cloned, adding conditions to one will not
-affect the other.
-
-But be careful – there's a gotcha when you clone hooks.
-
-To continue the example above, say you have a hook inside ``Model_Book``
-to check a value before saving:
-
-::
-
-    // In Model_Book
-
-    function init()
-    {
-        parent::init();
-
-        $this->addField('review');
-        $this->hasOne('Author');
-
-        $this->addHook('beforeSave', array($this,'check'));
-    }
-
-    function check($m)
-    {
-        if (strlen($this['review']) < 100) {
-
-            throw $this->exception('Review is too short');
+            $this->add('HelloWorld');
         }
     }
 
 
-After cloning, ``$this`` will be referencing the wrong object! Saving
-our Model with ``$book_archive->save()`` will call ``$book->check()``,
-and ``$this`` will validate the value of ``$book`` instead of
-``$book_archive``.
+    $box = $this->add('View_HelloBox');
 
-You can avoid this problem if you use the Model passed in as ``$m``
-instead of ``$this`` inside a hook. In the above example, ``$m`` will
-point to ``$book_archive``.
+    $box2 = $box->newInstance();
+
+Now you'll have two boxes with "Hello, World" in each of them.
+
 
 Object Naming
--------------
+=============
 
-A call to ``add()`` assigns your new object a unique name within the
+Adding a new object assigns it a unique name within your application
 Application. This is a useful property whenever you need a unique id
 such as for HTML elements (``<div id="...">``), GET arguments or session
 values.
 
-Typically Agile Toolkit will append the class name to ``$owner->name``
-along with a unique number, but if you specify a string as the second
-argument to ``add()`` you can alter part of the name.
-
-::
+Typically Agile Toolkit will base the name of new object by appending
+$short_name to ``$owner->name``. If the second argument to `add()` was
+not specified, then the class name is used instead. This makes meaningfull
+names for all objects::
 
     // Automatic naming
     $my_object = $api->add('myClass');
@@ -659,245 +528,70 @@ argument to ``add()`` you can alter part of the name.
     echo $my_object->name;          // realm_name_of_owner_foo
     echo $my_object->short_name;    // foo
 
+
+
+Setting Object Default Properties
+---------------------------------
+
+In your object, you might set a number of useful properties::
+
+    class View_MyBook extends View {
+        protected $cover_color = 'red';
+
+        function init() {
+            parent::init();
+
+            echo $this->cover_color;    // outputs 'red'
+        }
+    }
+
+Agile Toolkit allows you to change the default value of this property, when
+you add the object::
+
+    $this->add('View_MyBook', [ 'cover_color' => 'blue' ]);
+
+This approach is a good substitute to passing arguments into a constructor.
+
+
 Object Properties
 -----------------
 
 As we have seen, ``AbstractObject`` provides a number of useful
 properties to every object in your app. Here's a complete reference:
 
-.. raw:: html
-
-   <table>
-       <thead>
-           <tr>
-               <th>
-
-Property
-
-.. raw:: html
-
-   </th>
-               <th>
-
-Access\*
-
-.. raw:: html
-
-   </th>
-               <th>
-
-Description
-
-.. raw:: html
-
-   </th>
-           </tr>
-       </thead>
-       <tbody>
-           <tr>
-               <td>
-
-short\_name
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Read
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Object name unique to its parent's 'element' array.
-
-.. raw:: html
-
-   </td>
-           </tr>
-           <tr>
-               <td>
-
-name
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Read
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Object name unique to the entire application.
-
-.. raw:: html
-
-   </td>
-           </tr>
-           <tr>
-               <td>
-
-elements
-
-.. raw:: html
-
-   </td>
-               <td>
-
-None
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Array containing references to child objects for element tracking. Where
-tracking are not required, objects may be 'detached' and their
-``elements`` value will be ``true``. This helps conserve memory.
-
-.. raw:: html
-
-   </td>
-           </tr>
-           <tr>
-               <td>
-
-owner
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Read
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Points to the object which created this object through the call to
-``add()``
-
-.. raw:: html
-
-   </td>
-           </tr>
-           <tr>
-               <td>
-
-api
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Read
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Always points to the application object, the topmost object in the
-system
-
-.. raw:: html
-
-   </td>
-           </tr>
-           <tr>
-               <td>
-
-model
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Read
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Points to Model objects set with ``setModel()``
-
-.. raw:: html
-
-   </td>
-           </tr>
-           <tr>
-               <td>
-
-controller
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Read
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Points to Controller objects set with ``setController()``
-
-.. raw:: html
-
-   </td>
-           </tr>
-           <tr>
-               <td>
-
-auto\_track\_element
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Default
-
-.. raw:: html
-
-   </td>
-               <td>
-
-Regulates whether adding this object will automatically add a reference
-to the owner's ``elements`` array. If set to ``false``, the object will
-be 'detached'
-
-.. raw:: html
-
-   </td>
-           </tr>
-       </tbody>
-   </table>
++--------------------+---------+----------------------------------------------------------------------------+
+| Property           | Access  | Description                                                                |
++====================+=========+============================================================================+
+| short_name         | Read    | Object name unique to its parent's 'element' array.                        |
++--------------------+---------+----------------------------------------------------------------------------+
+| name               | Read    | Object name unique to the entire application.                              |
++--------------------+---------+----------------------------------------------------------------------------+
+| elements           | None    | Array containing references to child objects for element tracking.         |
+|                    |         | Where tracking are not required, objects may be 'detached' and             |
+|                    |         | their `elements` value will be `true`. This helps conserve memory.         |
++--------------------+---------+----------------------------------------------------------------------------+
+| owner              | Read    | Points to the object which created this object through the call to `add()` |
++--------------------+---------+----------------------------------------------------------------------------+
+| api                | Read    | Always points to the application object, the topmost object in the system  |
++--------------------+---------+----------------------------------------------------------------------------+
+| model              | Read    | Points to Model objects set with `setModel()`                              |
++--------------------+---------+----------------------------------------------------------------------------+
+| controller         | Read    | Points to Controller objects set with `setController()`                    |
++--------------------+---------+----------------------------------------------------------------------------+
+| auto_track_element | Default | Regulates whether adding this object will automatically                    |
+|                    |         | add a reference to the owner's `elements` array.                           |
+|                    |         | If set to `false`, the object will be 'detached'                           |
++--------------------+---------+----------------------------------------------------------------------------+
 
 These properties are declared as ``public`` so that they can be read by
-Addons, but it's bad style to change them directly. Here are the methods
-you should use to work with these properties:
+Addons or compatibility controllers. It's bad style to change them directly.
+Here are the methods you should use to work with these properties:
 
--  \*\*\ :math:`short_name**, `\ name: ``$obj->rename('new_name')``
--  \*\*\ :math:`elements**: ``\ obj->add();
-   :math:`obj->getElement(); `\ child->destroy()\`
--  \*\*\ :math:`owner**: ``\ new\_owner->add($object)\`
--  **$api**: none
--  \*\*\ :math:`model**: ``\ obj->setModel()\`
--  \*\*\ :math:`controller**: ``\ obj->setController()\`
--  **$auto\_track\_element**:
-   ``add(.., array('auto_track_element'=>true));``
+- changing `short_name`: use :php:meth:`AbstractObject::rename`
+- changing `elements`: use :php:meth:`AbstractObject::add`,
+  :php:meth:`AbstractObject::getElement`, :php:meth:`AbstractObject::destroy`
+- changing `owner`: use :php:meth:`AbstractObject::add` with new owner.
+- changing `model`: use :php:meth:`AbstractObject::setModel`.
+- changing `controller`: use :php:meth:`AbstractObject::setController`.
+- changing `auto_track_element`: use `add(.., [ 'auto_track_element' => true ] )`
 
