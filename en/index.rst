@@ -13,12 +13,14 @@ Getting Started
 
 Agile Toolkit PHP framework can be divided into 3 major parts:
 
- - Data Layer - working with the database, APIs, etc.
- - UI Layer - creating fancy UI interfaces and outputing HTML.
- - Extensions - a lots and lots of ways to improve things.
+#. Data Layer - working with the database, APIs, etc.
+#. UI Layer - creating fancy UI interfaces and outputing HTML.
+#. Extensions - a lots and lots of ways to improve things.
 
-To start it off with a simple example, let's build a very simple
-``CRUD`` UI.
+Agile Toolkit goal is to make steps #1 and #2 as simple and straigtforward
+for you, so you will be spending most of the time improving your
+working application. To demonstrate with an example, we will build
+a very simple a Web User Interface for entering and managing a List of Books.
 
 
 Create a Model
@@ -44,8 +46,8 @@ Create a file shared/lib/Model/Book.php::
     }
 
 .. tip:: A Model in Agile Toolkit is always represented by a PHP class. We use
-    PHP method calls to describe model structure, it's relationship and data
-    location.
+    PHP method calls to describe model structure, it's relationship and where
+    the data is physically located (PHP Session in our example).
 
 Build Web User Interface
 ------------------------
@@ -75,8 +77,24 @@ Navigate to admin/public/ and you should see your ``CRUD`` in action.
 .. todo::
     Add a sceenshot here
 
-Extending
+Explanation
 -----------
+
+You will be back through the process of creating models and UI over and over
+again for all the new data types you will want to add to your web application.
+
+.. figure:: figures/user-to-data-storage.png
+
+   User Accessing Data
+
+Your web application can have many different pages and each page may place
+one or several "Views" and connect each of them with Models. Knowing only
+this much you can already create a full admin backend for your app.
+
+
+Extending
+=========
+
 Now that you have got the basic editing, you can pimp-it-up a little.
 
 Open your model file and add a new method inside your model::
@@ -123,13 +141,16 @@ try it out in the local copy of Agile Toolkit.
 
 
 The Coding Style of Agile Toolkit
----------------------------------
+=================================
+
+
 
 When you are writing an application based on Agile Toolkit, you must follow
 a coding style of Agile Toolkit. If you will try to incorporate Agile
 Toolkit into your existing code structure you might face some difficulties.
 
-For the best experience start a new application and improve it as-you-learn.
+For the best experience start a new application and improve it as you
+read through this documentation.
 
 
 

@@ -1,5 +1,5 @@
-Adding and manipulating objects
-===============================
+Adding objects
+==============
 
 The principle of presenting the Web UI through a nested set of flexible
 objects is a fundamental concept in Agile Toolkit.
@@ -22,11 +22,6 @@ your form knows which fields to display and how to store the data.
 .. php:method:: init()
 
   Perform object initialization
-
-.. php:method:: newInstance()
-
-  Creates object of same class as this one and add to the same owner. This is
-  not same as cloning.
 
 .. php:attr: short_name
 
@@ -72,8 +67,8 @@ Here is what happens next:
    link to new object or a `true` value (depending on :php:attr:`auto_track_element`)
 #. Other properties passed through 2nd argument of `add()` are set.
 #. If a new object is a :ref:`View`, then
- a) :ref:`Template` initialization is taking place and stored in :php:attr:`AbstractView::$template`
- b) :php:attr:`AbstractView::$spot` is set as per 3rd argument of :php:meth:`AbstractObject::add`
+  a) :ref:`Template` initialization is taking place and stored in :php:attr:`AbstractView::$template`
+  b) :php:attr:`AbstractView::$spot` is set as per 3rd argument of :php:meth:`AbstractObject::add`
 
 #. Hook `$app @ beforeObjectInit` is called.
 #. Method :php:meth:`AbstractObject::init` is called for `LoremIpsum`.
@@ -124,6 +119,16 @@ Some shorthand methods also allow you to omit part of the class prefix:
 Adding Models with setModel()
 -----------------------------
 
+
+.. php:method:: setModel($model_or_class, ..)
+
+  Associates object with supplied model. If string is supplied as first
+  argument, it will create instance of this class. The name of the class
+  will be :ref:`normalized` by prefixing Model_ if necessary.
+
+  This method sets $object->model (which you can access directly) and
+  returns it.
+
 Using ``setModel()`` will have different results in different contexts.
 For example adding a Model to a Page object will set the Model data into
 the page's template. Adding the same Model to a Grid object will
@@ -148,9 +153,7 @@ existing model object, and in some classes, ``setModel()`` offers
 additional arguments.
 
 For example Grid allows you to specify a list of fields to use as
-columns as a second argument to ``setModel()``.
-
-::
+columns as a second argument to ``setModel()``::
 
     $grid = $page->add('Grid');
 
@@ -163,6 +166,10 @@ listing columns for viewing and columns for editing.
 Adding Controllers With setController()
 ---------------------------------------
 
+.. php:method:: setController($model_or_class, ..)
+
+  Associates controller with model. Will create object if necessary.
+
 In Agile Toolkit an object can use multiple Controllers. Controllers
 enhance the functionality of your object.
 
@@ -171,11 +178,6 @@ classes are specifically designed to work with pluggable Controllers and
 require you to call ``setController('Foo')`` if you need to change the
 default. This will be covered in the class's documentation.
 
-
-Control flow when adding objects
---------------------------------
-
-.
 
 Setting Default Properties
 --------------------------
@@ -199,23 +201,20 @@ you add the object::
 
 This approach is a good substitute to passing arguments into a constructor.
 
+.. chaining
 
 Chaining Object Methods
-=======================
+-----------------------
 
 In the true spirit of jQuery, most object methods will return a
 reference to themselves (``return $this;``) so you can chain your method
-calls:
-
-::
+calls::
 
      $this->add('FormAndSave')
          ->setModel($model)
          ->loadData($this->api->auth->get('id'));
 
-You can also chain calls to existing objects:
-
-::
+You can also chain calls to existing objects::
 
     // Configure an existing customer object
 
@@ -227,44 +226,112 @@ In your own classes, it's good practice to add ``return $this;`` to any
 method that configures the object, so you can chain your method calls.
 
 Accessing Added Objects
------------------------
+=======================
 
 ``AbstractObject`` provides two methods for accessing objects you have
-added into a parent object:
-
-::
+added into a parent object::
 
     $view = $page->add('View','myview');
 
     $v = $page->hasElement('myview');    // Returns $view or false
     $v = $page->getElement('myview');    // Returns $view or exception
 
-These are used frequently to customize objects at runtime.
+.. php:method:: getElement($name)
+
+    Looks for an element with specified short_name and returns it. Throws
+    exception if not found. Returns `true` if element exists, but is not tracked.
+
+.. php:method:: hasElement($name)
+
+    Looks for an element with specified short_name and returns it. Returns
+    `false` if not found. Returns `true` if element exists, but is not tracked.
+
+These are used frequently to customize objects at runtime. Not all
+objects will be accessible like that, however. The behaviour depends on
+:php:attr:`AbstractObject::auto_track_element`, if it's set to false,
+then the reference is not maintained. This is done to help garbage
+collector to get rid of those models you have created.
+
+This method is most frequently used to:
+- access Form fields
+- access Model fields
+
+In other cases it's adised that you keep reference to your object and use
+it if you need to access your object later.
+
+Renaming and Moving
+-------------------
+
+.. php:method:: rename($new_name)
+
+  Changes name for existing object. Avoid using this.
+
+Agile Toolkit allows you to rename objects, although it's generally not
+recommended to rename your objects after you have added them.
+
+You can also move object from one location to another::
+
+  $grid = $this->add('Grid');
+  $grid->addPaginator(5);
+  $box = $this->add('View_Box');
+
+  // Move paginator from Grid into the Box
+  $box->add($grid->paginator);
+
+.. todo::
+  Currently this might result in 2 paginators being displayed. Must address.
+
 
 Destroying Added Objects
 ------------------------
 
-::
+.. php:method:: destroy()
 
-    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    TODO: I've pulled this out into its own section as it seems
-    to be a different topic from accessing objects.
+    Removes object from it's parent and destroys all child objects. After
+    calling this, object detructor will be executed when all references
+    to the objects are dropped.
 
-    I don't find the docs clear here.
+:php:class:`AbstractView` is set to track objects when they are added,
+this is done to enable recursive pass during rendering. Other objects,
+models and controllers will not be tracked automatically. Some classes
+such as :php:class:`Field` will override this and will be tracked too::
 
-    1) With Models, you say we can't get them through the Element()
-       methods. But if you use setModel() you can use $obj->model.
-       HOw does garbage collection work differently in these 2 cases?
 
-    2) What is the practical difference between $view->destroy()
-       and unset($view)?
+    function init() {
+        parent::init();
 
-    3) Can we offer clear guidlines about when you would or would
-       not destroy a Model?
+        $m = $this->add('Model_Book');
 
-    I'll redraft this once I understand better...
+        $this->setModel('Person')->tryLoadAny();
+    }
 
-    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    function render() {
+
+        echo $this->model['name'];   // Shows name of the person
+
+        // Instance of "book" model does no longer exist.
+
+        parent::render();
+    }
+
+In this example, instances of two models were created in init() method.
+The Book model was destroyed when init() reached it's end, however
+the Person model was associated with $this object and was still accessible
+in it's render() method.
+
+Here is another example showing the difference::
+
+    $book = $this->add('Model_Book');
+
+    $hello = $this->add('LoremIpsum');
+
+    unset($book);   // will destroy Book
+    unset($hello);  // will NOT destroy Lorem, it will still render.
+
+    // $hello->destroy(); unset($hello);
+    // Use this instead to destroy LoremIpsum.
+
+
 
 But to aid garbage collection, Models can't be accessed. If you call
 getElement() to look for a Model, you'll get ``true`` instead of an
@@ -456,6 +523,12 @@ Wrappers are also handy when you need to configure a nested object:
 
 Cloning Objects & newInstance()
 -------------------------------
+
+.. php:method:: newInstance()
+
+  Creates object of same class as this one and add to the same owner. This is
+  not same as cloning.
+
 
 In Agile Toolkit you will frequently be changing your objects after they
 are added. For example, you might take your regular Model and add a new
