@@ -1,75 +1,19 @@
 Core Features
 ##############
 
-CakePHP comes with a plethora of built-in functions and classes. These classes
-and functions try to cover some of the most common features required in web
-applications.
+Agile Toolkit is a framework based on Objects with commont parent:
+:php:class:`AbstractObject`. You never extend it directly, but use
+one of three direct descendants:
+:php:class:`AbstractController`. :php:class:`AbstractView`. or
+:php:class:`AbstractModel`.
 
-General Purpose
-===============
-
-General purpose libraries are available and reused in many places across
-CakePHP.
-
-.. toctree::
-    :maxdepth: 2
-
-    core-features/toc-general-purpose
-
-.. _core-behaviors:
-
-Behaviors
-=========
-
-.. include:: /core-features/toc-behaviors.rst
-    :start-line: 3
-    :end-before: toctree
+Documentation on Abstract Core Classes
+======================================
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
-    core-features/toc-behaviors
+    core-features/objects
+    core-features/hooks
+    core-features/namespaces
 
-.. _core-components:
-
-Components
-==========
-
-.. include:: /core-features/toc-components.rst
-    :start-line: 3
-    :end-before: toctree
-
-.. toctree::
-    :maxdepth: 2
-
-    /core-features/toc-components
-
-.. _core-helpers:
-
-Helpers
-=======
-
-.. include:: /core-features/toc-helpers.rst
-    :start-line: 3
-    :end-before: toctree
-
-.. toctree::
-    :maxdepth: 2
-
-    /core-features/toc-helpers
-
-Utilities
-=========
-
-Beyond the core MVC components, CakePHP includes a great selection of utility
-classes that help you do everything from webservice requests, to caching, to
-logging, internationalization and more.
-
-.. toctree::
-    :maxdepth: 2
-
-    core-features/toc-utilities
-
-.. meta::
-    :title lang=en: Core Libraries
-    :keywords lang=en: core libraries,global constants,cookie,access control lists,number,text,time,security component,core components,general purpose,web applications,markup,authentication,api,cakephp,functionality,sessions,collections,events
