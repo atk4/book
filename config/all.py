@@ -11,9 +11,7 @@
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.todo',
-    'sphinxcontrib.phpdomain',
-    'config.cakei18n',
-    'config.cakebranch'
+    'sphinxcontrib.phpdomain'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -21,6 +19,8 @@ extensions = [
 
 # The suffix of source filenames.
 source_suffix = '.rst'
+
+todo_include_todos = True
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'

@@ -6,8 +6,7 @@ Welcome
 Agile Toolkit contains everything you need to develop web apps. It is a
 self-sufficient PHP framework modeled after Desktop UI Toolkits. Agile
 Toolkit may have some similar concepts to other Web MVC frameworks, but
-you should consider that some of your existing knowledge might be challenged.
-
+most of the concepts are approaches are re-considered and improved.
 
 Getting Started
 ===============
@@ -44,14 +43,23 @@ Create a file shared/lib/Model/Book.php::
         }
     }
 
-In this file we use a PHP method cals of a model to describe model structure,
-it's relations and data storage.
+.. tip:: A Model in Agile Toolkit is always represented by a PHP class. We use
+    PHP method calls to describe model structure, it's relationship and data
+    location.
 
-Build UI
------------
+Build Web User Interface
+------------------------
 
-UI is build by adding "views" inside other "view". The our case we will
-use a "Page" to add our ``CRUD`` there. Open file admin/page/index.php and add::
+Because user will interract with your web application through the browser,
+he needs User Interface. The UI Framework in Agile Toolkit is implemented
+using a varietty of "View" objects.
+
+One of the views is called "Page" and represents a URL user can navigate to.
+Another View is a CRUD (Record Manager UI allowing to create update or delete
+records).
+
+To allow user to interract, you just need to add "CRUD" into "Page". Open file
+admin/page/index.php and add::
 
     class page_index extends Page {
         function init() {
@@ -63,6 +71,9 @@ use a "Page" to add our ``CRUD`` there. Open file admin/page/index.php and add::
     }
 
 Navigate to admin/public/ and you should see your ``CRUD`` in action.
+
+.. todo::
+    Add a sceenshot here
 
 Extending
 -----------
