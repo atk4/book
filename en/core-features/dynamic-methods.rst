@@ -26,3 +26,4 @@ to check if method exists inside object;
     }
 
 You can also remove dynamically added methods with removeMethod();
+
