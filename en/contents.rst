@@ -7,10 +7,9 @@ Contents
    index
    agiletoolkit-overview
    core-features
-   controllers
    views
    models
-   core-libraries
+   controllers
    plugins
    console-and-shells
    development
