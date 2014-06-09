@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# CakePHP Cookbook documentation build configuration file, created by
+# Agile Toolkit documentation build configuration file, created by
 # sphinx-quickstart on Tue Jan 18 12:54:14 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.

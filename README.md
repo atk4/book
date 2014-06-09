@@ -1,5 +1,5 @@
-CakePHP Documentation
-=====================
+Agile Toolkit Documentation
+===========================
 
 This is the official documentation for the Agile Toolkit project. It is available online in HTML, PDF and EPUB formats at http://book.agiletoolkit.org.
 
@@ -30,13 +30,13 @@ After installing the required packages, you can build the documentation using `m
 
 	# Create all the HTML docs. Including all the languages.
 	make html
-	
+
 	# Create just the english HTML docs.
 	make html-en
-	
+
 	# Create all the EPUB (e-book) docs.
 	make epub
-	
+
 	# Create just the engish EPUB docs.
 	make epub-en
 
@@ -77,29 +77,6 @@ Translations
 
 Contributing translations requires that you make a new directory using the two letter name for your language.  As content is translated, directories mirroring the english content should be created with localized content.
 
-
-Generating Meta Tags
---------------------
-
-If you are providing translations and want to automatically generate meta tags for the resulting HTML files, a MetatagShell is provided in
-the `scripts` folder of this repo. In order to use it, copy it into any CakePHP 2.0 empty application inside `app/Console/Command`, execute
-`Console/cake metatag` and follow the instructions.
-
-The script will process all the files under one of the translation folders and generate the possible description terms using an external API, 
-it is a good idea to go over the generated terms and clean-up whatever noise it might have generated.
-
-Making Search Work Locally
---------------------------
-
-* Install elasticsearch.  This varies based on your platform, but most
-  package managers have a package for it.
-* Clone the [docs_search](https://github.com/cakephp/docs_search) into a
-  web accessible directory.
-* Modify `searchUrl` in `themes/cakephp/static/app.js` to point at the
-  baseurl for your docs_search clone.
-* Start elasticsearch with the default configuration.
-* Populate the search index using `make populate-index`.
-* You should now be able to search the docs using elasticsearch.
 
 Build Scripts
 -------------

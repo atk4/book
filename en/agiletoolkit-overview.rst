@@ -193,4 +193,4 @@ Create a new PHP file called "cmd.php"::
 
 .. meta::
     :title lang=en: Agile Toolkit Overview
-    :keywords lang=en: web application framework,model view controller,object oriented programming,piece of cake,cookbook,functionality,xml,cakephp
+    :keywords lang=en: web application framework,model view controller,object oriented programming,piece of cake,cookbook,functionality,xml
