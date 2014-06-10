@@ -1,5 +1,5 @@
 User Interface
-==============
+##############
 
 Behind the simple facade of the PHP objects, Agile Toolkit hides a flexible
 and robust implementation of User Interface based on best web development
@@ -65,6 +65,31 @@ change possible and well integrated into the toolkit:
 #. Manually interract with :php:class:`GiTemplate` through `template` property.
 #. Create your own :ref:`Agile CSS Theme` and tweak the look.
 #. Write your own HTML and :ref:`create a new view`.
+
+General Techniques of User Interface
+====================================
+
+.. toctree::
+    :maxdepth: 1
+
+    views/core
+    views/templates
+    views/custom
+    views/js
+    views/ajax
+
+Useful Views in Agile Toolkit
+==============================
+
+.. toctree::
+    :maxdepth: 2
+
+    views/simple
+    views/menu
+    views/list
+    views/interactive
+    views/crud
+    views/popover
 
 
 
