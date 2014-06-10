@@ -72,8 +72,8 @@ General Techniques of User Interface
 .. toctree::
     :maxdepth: 1
 
-    views/core
     views/templates
+    views/core
     views/custom
     views/js
     views/ajax

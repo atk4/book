@@ -1,7 +1,9 @@
 Template Engine
 ###############
 
-This page covers some of the advanced topics of Agile Toolkit Template system.
+Agile Toolkit Applications are HTML based. The HTML is collected from various
+templates. To actually manipulate the template, the class GiTemplate is used
+by a View objects.
 
 .. php:class:: GiTemplate
 
@@ -25,70 +27,198 @@ parses tempaltes like this::
 
 
 
-Opening Tag — alphanumeric sequence of characters surrounded by ``<?``
-and ``?>`` (example ``<?elephant?>``)
+Opening Tag — alphanumeric sequence of characters surrounded by ``{``
+and ``}`` (example ``{elephant}``)
 
-Closing tag — very similar to opening tag but surrounded by ``<?/`` and
-``?>``. If name of the tag is omitted, then it closes matching tag.
-(example ``<?/elephant?>`` or ``<?/?>``)
+Closing tag — very similar to opening tag but surrounded by ``{/`` and
+``}``. If name of the tag is omitted, then it closes a recently opened tag.
+(example ``{/elephant}`` or ``{/}``)
 
 Empty tag — consists of tag immediately followed by closing tag (such as
-``<?elephant?><?/?>``)
+``{elephant}{/}``)
 
 Self-closing tag — another way to define empty tag. It works in exactly
-same way as empty tag. (``<?$elephant?>``)
+same way as empty tag. (``{$elephant}``)
 
 Region — typically a multiple lines HTML and text between opening and
-closing tag. (``<?elephant?>``\ Hello, World\ ``<?/?>``)
+closing tag which can contain a nested tags. Regions are typically named
+with CamelCase, while other tags are named using ``snake_case``::
 
-Nested tag — tag located inside a region ``<?elephant?>``\ Hello,
-``<?name?>``\ World\ ``<?/?><?/?>``
+    some text before
+    {ElephantBlock}
+      Hello, {$name}.
 
-SMlite — template manager
--------------------------
+      by {sender}John Smith{/}
 
-This is a class defined in lib/SMlite.php which will read template from
-file into memory and will allow developer to interact with template.
-Templates in Agile Toolkit contains no logic, however certain views may
-introduce their own logic. Let's go over the basic functionality of
-SMlite first to see what can we do with the following template:
+    {/ElephantBlock}
+    some text after
 
-::
+In the example above, ``sender`` and ``name`` are nested tags.
 
-    <?greetings?>Hello, <?name?>World<?/?><?/?>
+Region cloning - a process when a region becomes a standalone template and
+all of it's nested tags are also preserved.
 
-Initializing SMlite
-~~~~~~~~~~~~~~~~~~~
+Top Tag - a tag representing a Region containing all of the template. Typically
+is called _top.
 
-Like any other object in Agile Toolkit, you can use the following form:
+Manually template usage pattern
+-------------------------------
 
-::
+Template engine in Agile Toolkit can be used independently, without views
+if you require so. A typical workflow would be:
 
-    $template = $this->add('SMlite');
+1. Load template using :php:meth:`GiTemplate::loadTemplate` or
+   :php:meth:`GiTemplate::loadTemplateFromString`.
+
+2. Set tag and region values with :php:meth:`GiTemplate::set`.
+3. Render template with :php:meth:`GiTemplate::render`.
+
+
+Template use together with Views
+--------------------------------
+
+A UI Framework such as Agile Toolkit puts quite specific requirements
+on template system. In case with Agile Toolkit, the following pattern
+is used.
+
+ - Each object corresponds to one template.
+ - View inserted into another view is assigned a region inside parents
+   template, called ``spot``.
+ - Developer may decide to use a default template, clone region of parents
+   template or use a region of a user-defined template.
+ - Each View is responsible for it's unique logic such as repeats, substitutions
+   or conditions.
+
+As example, I would like to look at how :php:class:`Form` is rendered. The template of form
+contains a region called "FormLine" - it represents a label and a input.
+
+When an input is added into a Form, it adopts a "FormLine" region. While the
+nested tags would be identical, the markup around them would be dependent on
+form layout.
+
+This approach allows you affect the way how :php:class:`Form_Field` is rendered
+without having to provide it with custom template, but simply relying on template
+of a Form.
+
+
++---------------------------------------------------+-------------------------------------------------------+
+| Popular use patterns for template engines         | How Agile Toolkit implements it                       |
++===================================================+=======================================================+
+| Repeat section of template                        | :php:class:`Lister` will duplicate Region             |
++---------------------------------------------------+-------------------------------------------------------+
+| Associate nested tags with models record          | :php:class:`View` with setModel() can do that         |
++---------------------------------------------------+-------------------------------------------------------+
+| Various cases within templates based on condition | cloneRegion or get, then use set()                    |
++---------------------------------------------------+-------------------------------------------------------+
+| Custom handling certain tags or regions           | :php:meth:`GiTemplate::eachTag` with a callback       |
++---------------------------------------------------+-------------------------------------------------------+
+| Filters (to-upper, escape)                        | all tags are escaped automatically, but               |
+|                                                   | other filters are not supported (yet)                 |
++---------------------------------------------------+-------------------------------------------------------+
+| Template inclusion                                | Generally discouraged, but can be done with eachTag() |
++---------------------------------------------------+-------------------------------------------------------+
+
+Using Template Engine directly
+==============================
+
+Although you might never need to use template engine, understanding
+how it's done is important to completely grasp Agile Toolkit underpinnings.
+
 
 Loading template
-~~~~~~~~~~~~~~~~
+----------------
+
+.. php:method:: loadTemplateFromString(string)
+
+    Initialize current template from the supplied string
+
+.. php:method:: loadTemplate(filename)
+
+    Locate (using :php:class:`PathFinder`) and read template from file
+
+.. php:method:: reload()
+
+    Will attempt to re-load template from it's original source.
+
+.. php:method:: __clone()
+
+    Will create duplicate of this template object.
+
+
+.. php:attr:: template
+
+    Array structure containing a parsed variant of your template.
+
+.. php:attr:: tags
+
+    Indexed list of tags and regions within the template for speedy access.
+
+.. php:attr:: template_source
+
+    Simply contains information about where the template have been loaded from.
+
+.. php:attr:: original_filename
+
+    Original template filename, if loaded from file
+
 
 Template can be loaded from either file or string by using one of
-following commands
+following commands::
 
-::
 
-    $template->loadTemplateFromString($str);
-     // OR
+    $template = $this->add('GiTemplate');
+
+    $template->loadTemplateFromString('Hello, {name}world{/}');
+
+To load template from file::
+
     $template->loadTemplate('mytemplate');
 
-SMlite will use PathFinder to locate template in one of the directories
-(see previous chapter for default directory list). By default .html
-extension will be appended to the name of the template file.
+And place the following inside ``template/mytemplate.html``::
+
+    Hello, {name}world{/}
+
+GiTemplate will use :php:class:`PathFinder` to locate template in one of the
+directories of :ref:`resource` ``template``.
+
+Changing template contents
+--------------------------
+
+.. php:method: set(tag, value)
+
+    Escapes and inserts value inside a tag. If passed a hash, then each
+    key is used as a tag, and corresponding value is inserted.
+
+.. php:method: setHTML(tag, value)
+
+    Identical but will not escape. Will also accept hash similar to set()
+
+.. php:method: append(tag, value)
+
+    Escape and add value to existing tag.
+
+.. php:method: appendHTML(tag, value)
+
+    Similar to append, but will not escape.
+
+
+Example::
+
+    $template = $this->add('GiTemplate');
+
+    $template->loadTemplateFromString('Hello, {name}world{/}');
+
+    $template->set('name', 'John');
+    $template->appendHTML('name', '&nbsp;<i class="icon-heart"></i>');
+
+    echo $template->render();
+
 
 Rendering template
-~~~~~~~~~~~~~~~~~~
+------------------
 
 Ultimately we want to convert template into something useful. Rendering
-will return contents of the template without tags.
-
-::
+will return contents of the template without tags::
 
     $result=$template->render();
 
