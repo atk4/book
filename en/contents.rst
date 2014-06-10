@@ -8,9 +8,10 @@ Contents
    agiletoolkit-overview
    core-features
    views
+   js
    models
    controllers
-   plugins
+   addons
    console-and-shells
    development
    deployment
