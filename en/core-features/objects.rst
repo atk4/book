@@ -23,21 +23,21 @@ your form knows which fields to display and how to store the data.
 
   Perform object initialization
 
-.. php:attr: short_name
+.. php:attr:: short_name
 
   Unique object name within parent's $element array
 
-.. php:attr: name
+.. php:attr:: name
 
   Unique object name. Consists of $owner->name . "_" . $this->short_name
 
-.. php:attr: elements
+.. php:attr:: elements
 
   Array containing references to all objects which have been added into
   this class. Instead of some references, there might be "true" value. This
   is to improve work of garbage collector.
 
-.. php:attr: auto_track_element
+.. php:attr:: auto_track_element
 
   If this is true, then owner object will contain reference inside it's
   element array. If false, then "true" will be stored instead. For Views
@@ -129,6 +129,12 @@ Adding Models with setModel()
   This method sets $object->model (which you can access directly) and
   returns it.
 
+.. php:attr:: model
+
+  Points to the associated model for this object
+
+
+
 Using ``setModel()`` will have different results in different contexts.
 For example adding a Model to a Page object will set the Model data into
 the page's template. Adding the same Model to a Grid object will
@@ -178,6 +184,13 @@ classes are specifically designed to work with pluggable Controllers and
 require you to call ``setController('Foo')`` if you need to change the
 default. This will be covered in the class's documentation.
 
+.. php:attr:: controller
+
+  Points to the associated controller.  Although usually you can add
+  multiple controllers inside your object (and they wouldn't complain),
+  this property can be used for situations where only one controller
+  is applicable or "default" controller is used.
+
 
 .. chaining
 
@@ -223,6 +236,8 @@ added into a parent object::
 
     Looks for an element with specified short_name and returns it. Returns
     `false` if not found. Returns `true` if element exists, but is not tracked.
+
+.. php:attr:: elements
 
 These are used frequently to customize objects at runtime. Not all
 objects will be accessible like that, however. The behaviour depends on
