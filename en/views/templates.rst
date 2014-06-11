@@ -81,13 +81,13 @@ A UI Framework such as Agile Toolkit puts quite specific requirements
 on template system. In case with Agile Toolkit, the following pattern
 is used.
 
- - Each object corresponds to one template.
- - View inserted into another view is assigned a region inside parents
-   template, called ``spot``.
- - Developer may decide to use a default template, clone region of parents
-   template or use a region of a user-defined template.
- - Each View is responsible for it's unique logic such as repeats, substitutions
-   or conditions.
+- Each object corresponds to one template.
+- View inserted into another view is assigned a region inside parents
+  template, called ``spot``.
+- Developer may decide to use a default template, clone region of parents
+  template or use a region of a user-defined template.
+- Each View is responsible for it's unique logic such as repeats, substitutions
+  or conditions.
 
 As example, I would like to look at how :php:class:`Form` is rendered. The template of form
 contains a region called "FormLine" - it represents a label and a input.
@@ -225,100 +225,102 @@ will return contents of the template without tags::
     $this->add('Text')->set($result);
     // Will output "Hello, World"
 
-***Why not "echo" the result?***
-
-*Agile Toolkit discourages direct output. You may try using "echo" for
-debug purposes, but never leave it in production environment. You should
-use objects instead, such as "Text". Text will automatically escape
-output for browser output too.*
-
-Setting value
-~~~~~~~~~~~~~
-
-After template is loaded, you can change contents of any region:
-
-::
-
-    $template->set('name','Peter');
-
-    // Will contain "Hello, Peter"
-
-You can also specify hash to ``set()`` with tag/new value.
-
-Getting value
-~~~~~~~~~~~~~
-
-Often templates are used to get values too. Let's put name of the person
-we are greeting into uppercase
-
-$ template->set('name', strtoupper($template->get('name')));
-
-::
-
-    // Will contain "Hello, WORLD"
 
 Template cloning
-~~~~~~~~~~~~~~~~
+----------------
 
 When you have nested tags, you might want to extract some part of your
 template and render it separately. For example, you may have 2 tags
 SenderAddress and ReceiverAddress each containing nested tags such as
 "name", "city", "zip". You can't use set('name') because it will affect
 both names for sender and receiver. Therefore you need to use cloning.
-
-::
+Let's assume you have the following template in ``template/envelope.html``::
 
     <div class="sender">
-    <?Sender?>
-    <?$name?>
-    <?$street?>
-    <?$city?> <?$zip?>
-    <?/Sender?>
+    {Sender}
+      {$name},
+      Address: {$street}
+               {$city} {$zip}
+    {/Sender}
     </div>
 
     <div class="recipient">
-    <?Recipient?>
-    <?$name?>
-    <?$street?>
-    <?$city?> <?$zip?>
-    <?/Recipient?>
+    {Recipient}
+      {$name},
+      Address: {$street}
+               {$city} {$zip}
+    {/Recipient}
     </div>
 
+You can use the following code to manipulate the template above::
 
-    $template=$this->add('SMlite');
-    $template->loadData('envelope');        // templates/default/envelope.html
+    $template = $this->add('GiTemplate');
+    $template->loadTemplate('envelope');        // templates/envelope.html
 
     // Split into multiple objects for processing
-    $sender=$template->cloneRegion('Sender');
-    $recipient=$template->cloneRegion('Recipient');
+    $sender    = $template->cloneRegion('Sender');
+    $recipient = $template->cloneRegion('Recipient');
 
     // Set data to each sub-template separately
-    $sender->set($sender_data);
-    $recipient->set($recipient_data);
+    $sender    ->set($sender_data);
+    $recipient ->set($recipient_data);
 
     // render sub-templates, insert into master template
-    $template->set('Sender',$sender->render());
-    $template->set('Recipient',$recipient->render());
+    $template->set('Sender',    $sender   ->render());
+    $template->set('Recipient', $recipient->render());
 
     // get final result
     $result=$template->render();
 
-More operations
-~~~~~~~~~~~~~~~
+Same thing using Agile Toolkit Views::
 
-You can also ``del('name')`` to empty contents of the region, or
-``append('name',' and Steve')``. You can also call ``is_set('name')`` to
-find out if such tag exists. Finally methods ``trySet`` and ``tryDel``
-can be used if you are not entirely sure if such tag will exist and
-would rather have your code do nothing if tag is missing rather than
-raise exception.
+    $envelope = $this->add('View',null,null, ['envelope']);
 
-Operations on multiple tags
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    $sender    = $envelope->add('View', null, 'Sender',    'Sender');
+    $recipient = $envelope->add('View', null, 'Recipient', 'Recipient');
 
-Same tag can be used multiple times. If you will "set" such a tag, then
-all regions will be changed. ``get()`` will return contents of a first
-region. ``append()`` will add content to each region.
+    $sender    ->tempalte->set($sender_data);
+    $recipient ->tempalte->set($recipient_data);
+
+We do not need to manually render anything in this scenario. Also the
+template of $sender and $recipient objects will be appropriatelly cloned
+from regions of $envelope and then substituted back after render.
+
+In this example I've usd a basic :php:class:`View` class, however I could
+have used my own View object with some more sophisticated presentation logic.
+The only affect on the example would be name of the class, the rest of
+presentation logic would be abstracted inside view's ``render()`` method.
+
+Other opreations with tags
+--------------------------
+
+.. php:method:: del(tag)
+
+    Empties contents of tag within a template.
+
+.. php:method:: isSet(tag)
+
+    Returns ``true`` if tag exists in a template.
+
+.. php:method:: trySet(name, value)
+
+    Attempts to set a tag, if it exists within template
+
+.. php:method:: tryDel(name)
+
+    Attempts to empty a tag. Does nothing if tag with name does not exist.
+
+Repeating tags
+--------------
+
+Agile Toolkit template engine allows you to use same tag several times::
+
+    Roses are {color}red{/}
+    Violets are {color}blue{/}
+
+If you execute ``set('color','green')`` then contents of both tags will
+be affected. Similarly if you call ``append('color','-ish')`` then the
+text will be appended to both tags.
 
 You can also use ``eachTag()`` to iterate through those tags.
 
