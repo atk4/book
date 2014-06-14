@@ -1,0 +1,3 @@
+[submodule "themes/ADCtheme"]
+	path = themes/ADCtheme
+	url = https://github.com/coordt/ADCtheme.git
