@@ -17,6 +17,7 @@ Contents
    deployment
    tutorials-and-examples
    contributing
+   excercises
    appendices
 
 .. todolist::

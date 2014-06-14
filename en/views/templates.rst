@@ -324,33 +324,50 @@ text will be appended to both tags.
 
 You can also use ``eachTag()`` to iterate through those tags.
 
-``<?mywiki?>Continue to <?page?>about<?/?> page or <?page?>history<?/?> page<?/?>``
+.. php:method:: eachTag
 
-::
+    Executues a call-back for each tag
 
-    $tempalte->eachTag('page',function($val){
-        return '<a href="'.$val.'.html">'.ucwords($val).'</a>';
-    });
+The format of the callback is::
 
-    // Will contain "Hello, WORLD"
+    function processTag($contents, $tag) {
+        return ucwords($contents);
+    }
+
 
 If your callback function defines second argument, then it will receive
 "unique" tag name which can be used to access template directly. This
 makes sense if you want to add object into that region. You can't insert
 object into SMlite template, however every view in the system will have
-it's template pre-initialized for you.
+it's template pre-initialized for you
+
+The following template will implement the ``include`` functionality for
+your template::
+
+    $template->eachTag('include', function($content, $tag) use($template) {
+        $t = $template->newInstance();
+        $t->loadTemplate($content);
+        $template->set($tag, $t->render());
+    });
+
+See also: :ref:`templates and views`
+
+.. todo:: fix this reference
 
 Views and Templates
--------------------
+===================
 
-Now that you understand how raw templates work, let's see how views use
-them.
+Let's look how templates work together with View objects.
 
 Default template for a view
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
-By default view object will execute ``defaultTemplate()`` method which
-returns location of the template. This function must return array with
+.. php:method:: defaultTemplate()
+
+    Specify default template for a view.
+
+By default view object will execute :php:meth:`defaultTemplate()` method which
+returns name of the template. This function must return array with
 one or two elements. First element is the name of the template which
 will be passed to ``loadTemplate()``. Second argument is optional and is
 name of the region, which will be cloned. This allows you to have
@@ -359,16 +376,14 @@ multiple views load data from same template but use different region.
 Function can also return a string, in which case view will attempt to
 clone region with such a name from parent's template. This can be used
 by your "menu" implementation, which will clone parent's template's tag
-instead to hook into some specific template
-
-::
+instead to hook into some specific template::
 
     function defaultTemplate(){
-        return array('greeting');   // uses templates/default/greeting.html
+        return [ 'greeting' ];   // uses templates/greeting.html
     }
 
 Redefining template for view during adding
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------------------------------
 
 When you are adding new object, you can specify a different template to
 use. This is passed as 4th argument to ``add()`` method and has the same
@@ -377,20 +392,16 @@ approach you can use existing objects with your own templates. This
 allows you to change the look and feel of certain object for only one or
 some pages. If you frequently use view with a different template, it
 might be better to define a new View class and re-define
-``defaultTemplate()`` method instead.
-
-::
+``defaultTemplate()`` method instead::
 
     $this->add('MyObject',null,null,array('greeting'));
 
 Accessing view's template
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 Template is available by the time ``init()`` is called and you can
 access it from inside the object or from outside through "template"
-property.
-
-::
+property::
 
     $grid=$this->add('Grid',null,null,array('grid_with_hint'));
     $grid->template->trySet('my_hint','Changing value of a grid hint here!');
@@ -401,7 +412,7 @@ existing tags, their output can be overwritten during rendering of the
 view.
 
 How views render themselves
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------
 
 Agile Toolkit perform object initialization first. When all the objects
 are initialized global rendering takes place. Each object's ``render()``
@@ -427,33 +438,48 @@ implemented using generic views.
     $sender->template->trySet($sender_data);
     $receiver->template->trySet($receiver_data);
 
-Best Practices
---------------
+..  templates and views
 
-Don't use SMlite directly
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Using Views with Templates efficiently
+--------------------------------------
+
+For maximum efficiency you should consider using Views and Templates
+in combination to achieve the result. The example which was previously
+mentioned under :php:meth:`GiTemplate::eachTag`::
+
+    $view->template->eachTag('include', function($content, $tag) use($view) {
+        $view->add('View', null, $tag, [$content]);
+    });
+
+
+
+Best Practices
+==============
+
+Don't use Template Engine without views
+---------------------------------------
 
 It is strongly advised not to use templates directly unless you have no
 other choice. Views implement consistent and flexible layer on top of
-SMlite as well as integrate with many other components of Agile Toolkit.
+GiTemplate as well as integrate with many other components of Agile Toolkit.
 The only cases when direct use of SMlite is suggested is if you are not
 working with HTML or the output will not be rendered in a regular way
 (such as RSS feed generation or TMail)
 
 Organize templates into directories
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------
 
 Typically templates directory will have subdirectories: "page", "view",
 "form" etc. Your custom template for one of the pages should be inside
 "page" directory, such as page/contact.html. If you are willing to have
 a generic layout which you will use by multiple pages, then instead of
-putting it into "page" directory, call it "page\_two\_columns.html".
+putting it into "page" directory, call it ``page_two_columns.html``.
 
 You can find similar structure inside atk4/templates/shared or in some
 other projects developed using Agile Toolkit.
 
 Naming of tags
-~~~~~~~~~~~~~~
+--------------
 
 Tags use two type of naming - CamelCase and underscore\_lowercase. Tags
 are case sensitive. The larger regions which are typically used for
@@ -462,49 +488,51 @@ Examples would be: "Menu", "Content" and "Recipient". The lowercase and
 underscore is used for short variables which would be inserted into
 template directly such as "name" or "zip".
 
-Don't Repeat Yourself (DRY)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Globally Recognized Tags
+========================
 
-You must always remember and your designer must also know the DRY
-principle. Avoid having exactly same piece of code on all the pages. If
-you must place "disclaimer" on multiple pages, you can use this simple
-syntax:
 
-::
+Agile Toolkit View will automatically substitute several tags with the values.
+The tag {$_id} is automatically replaced with a unique name by a View.
 
-    $page->add('View',null,'Disclaimer',array('disclaimer'));
+There are more templates which are being substituted:
 
-Take advantage of global setTags
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+- {page}logout{/} - will be replaced with relative URL to the page
+- {public}images/logo.png{/} - will replace with URL to a public asset
+- {css}css/file.css{/} - will replace with URL link to a CSS file
+- {js}jquery.validator.js{/} - will replace with URL to JavaScript file
 
-Application (API) has a function ``setTags($t)`` which is called for
+Avoid using the next two tags, which are obsolete:
+
+- {$atk_path} - will insert URL leading to atk4 public folder
+- {$base_path} - will insert URL leading to public folder of the project
+
+.. todo:: base_path might be pointing to a base folder and not public
+
+
+Application (API) has a function :php:`App_Web::setTags` which is called for
 every view in the system. It's used to resolve "template" and "page"
 tags, however you can add more interesting things here. For example if
 you miss ability to include other templates from Smarty, you can
-implement custom handling for ``<?include?>`` tag here.
+implement custom handling for ``{include}`` tag here.
 
 Be considered that there are a lot of objects in Agile Toolkit and do
 not put any slow code in this function.
 
-
-
-
+Internals of Template Engine
+============================
 
 When template is loaded, it's represented in the memory as an array.
-Example Template:
+Example Template::
 
-::
-
-    Hello <?subject?>world<?/?>!!
-
-SMLite converts the template into the following structure available
-under ``$smlite->template``.
+    Hello {subject}world{/}!!
 
 Content of tags are parsed recursively and will contain further arrays.
 In addition to the template tree, tags are indexed and stored inside
 "tags" property.
 
-::
+GiTemplate converts the template into the following structure available
+under ``$template->template`::
 
     // template property:
     array (
@@ -515,99 +543,17 @@ In addition to the template tree, tags are indexed and stored inside
       1 => '!!',
     )
 
-    // tags property
+Property tags would contain::
+
     array (
       'subject'=> array( &array ),
       'subject#1'=> array( &array )
     )
 
-As a result each tag will actually add two tags. If tag with same name
-is added, reference to a region is added inside respective tag
-sub-array. This allow ``$smlite->get()`` to quickly retrieve contents of
+As a result each tag will be stored under it's actual name and the name with
+unique "#1" appended (in case there are multiple instances of same tag).
+This allow ``$smlite->get()`` to quickly retrieve contents of
 appropriate tag and it will also allow ``render()`` to reconstruct the
-output
+output efficiently.
 
-
-
- * ==[ About SMlite ]==========================================================
- * This class is a lightweight template engine. It's based around operating with
- * chunks of HTML code and the main aims are:
- *
- *  - completely remove any code from templates
- *  - speed up template parsing and manipulation speed
- *
- * @author      Romans <romans@agiletoolkit.org>
- * @copyright   AGPL
- * @version     2.0
- *
- *
- * ==[ Version History ]=======================================================
- * 1.0          First public version (released with AModules3 alpha)
- * 1.1          Added support for "_top" tag
- *              Removed support for permanent tags
- *              Much more comments and other fixes
- * 2.0          Reimplemented template parsing, now doing it with regexps
- *
- * ==[ Description ]===========================================================
- * SMlite templates are HTML pages containing tags to mark certain regions.
- * <html><head>
- *   <title>MySite.com - {page_name}unknown page{/page_name}</title>
- * </head>
- *
- * Inside your application regions may be manipulated in a few ways:
- *
- *  - you can replace region with other content. Using this you can replace
- *   name of sub-page or put a date on your template.
- *
- *  - you can clone whole template or part of it. This is useful if you are
- *   working with objects
- *
- *  - you can manipulate with regions from different files.
- *
- * Traditional recipe to work with lists in our templates are:
- *
- *  1. clone template of generic line
- *  2. delete content of the list
- *  3. inside loop
- *   3a. insert values into cloned template
- *   3b. render cloned template
- *   3c. insert rendered HTML into list template
- *  4. render list template
- *
- * Inside the code I use terms 'region' and 'spot'. They refer to the same thing,
- * but I use 'spot' to refer to a location inside template (such as {$date}),
- * however I use 'region' when I am refering to a chunk of HTML code or sub-template.
- * Sometimes I also use term 'tag' which is like a pointer to region or spot.
- *
- * When template is loaded it's parsed and converted into array. It's possible to
- * cache parsed template serialized inside array.
- *
- * Tag name looks like this:
- *
- *  "misc/listings:student_list"
- *
- * Which means to seek tag {student_list} inside misc/listings.html
- *
- * You may have same tag several times inside template. For example you can
- * use tag {$title} inside <head><title> and <h1>.
- *
- * If you would set('title','My Title'); it will insert that value in
- * all those regions.
- *
- * ==[ Agile Toolkit integration ]============================================
- * Rule of thumb in object oriented programming is data / code separation. In
- * our case HTML is data and our PHP files are code. SMlite helps to completely
- * cut out the code from templates (smarty promotes idea about integrating
- * logic inside templates and I decided not to use it for that reason)
- *
-* Inside Agile Toolkit, each object have it's own template or may have even several
-* templates. When object is created, it's assigned to region inside template.
-* Later object operates with assigned template.
-*
-* Each object is also assigned to a spot on their parent's template. When
-* object is rendered, it's HTML is inserted into parent's template.
-*
-* ==[ Non-AModules3 integration ]=============================================
-* SMlite have no strict bindings or requirements for AModules3. You are free
-* to use it inside any other library as long as you follow license agreements..
 
