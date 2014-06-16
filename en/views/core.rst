@@ -217,7 +217,7 @@ The other tags here can be populated by methods of a View class.
 
 
 
-.. _Component Definition Array
+.. _Component Definition Array:
 
 Component Definition Array
 ==========================

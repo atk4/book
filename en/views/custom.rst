@@ -19,11 +19,27 @@ templates. There exists a template for any view element (except AbstractView).
 
 To customize Look of Agile Toolkit you can use several strategies:
 
-- Create a custom :doc:`/css/theme`.
-- Use different or your own Layouts.
-- Use pages with custom template.
-- Creating custom views with your own template.
-- Assigning classes to existing Views.
+Create a custom :doc:`/css/theme`
+    Will affect overall look and feel of your application, may affect color scheme,
+    spacing between elements and other visual enhancements such as shadows, borders,
+    responsiveness.
+
+Use different or your own Layouts
+    The layout will affect overal element positioning on the page - menus, headers,
+    footers, icons and responsiveness.
+
+Use pages with custom template
+    Customizing individual look on the page will make your information well-prented,
+    more usable and nicely structured.
+
+Creating custom views with your own template.
+    While the fastest way to display information is with :php:class:`Grid` and
+    :php:class:`ModelDetails`, quite often you need to obide by a custom presentation
+    of data such as lists, view pannels and so on. Those views require creation
+    of custom views with custom templates.
+
+Assigning CSS classes to existing Views.
+    :doc:`/css` supports a wide varietty of :doc:`/css/components` which can
+    change the way how views are presented using :ref:`Component Definition Array`
+
 - Use special outline Views and composition.
-
-
