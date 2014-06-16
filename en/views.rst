@@ -1,4 +1,4 @@
-    User Interface
+User Interface
 ##############
 
 Behind the simple facade of the PHP objects, Agile Toolkit hides a flexible
@@ -75,8 +75,6 @@ General Techniques of User Interface
     views/templates
     views/core
     views/custom
-    views/js
-    views/ajax
 
 Useful Views in Agile Toolkit
 ==============================

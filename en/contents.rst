@@ -8,6 +8,7 @@ Contents
    agiletoolkit-overview
    core-features
    views
+   css
    js
    models
    controllers
