@@ -1,5 +1,5 @@
-JavaScript Integration
-######################
+JavaScript API
+##############
 
 Behind the simple facade of the PHP objects, Agile Toolkit hides a flexible
 and robust implementation of User Interface based on best web development
