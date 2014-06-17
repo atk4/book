@@ -3,7 +3,7 @@ Customizing Look
 
 This chapter explains a best practices and different strategies on customizing
 look and feel of your Agile Toolkit application. It's important that you understand how
-:doc:`templates </views/templates>` and :doc:`view rendering </views/views work in general it is more important that
+:doc:`templates </views/templates>` and :doc:`view rendering </views/core>` work in general it is more important that
 you use apply your knowledge correctly.
 
 
@@ -26,20 +26,40 @@ Create a custom :doc:`/css/theme`
 
 Use different or your own Layouts
     The layout will affect overal element positioning on the page - menus, headers,
-    footers, icons and responsiveness.
+    footers, icons and responsiveness. This is further documented in :php:Class:`Layout`
+    class documentation.
 
 Use pages with custom template
     Customizing individual look on the page will make your information well-prented,
-    more usable and nicely structured.
+    more usable and nicely structured. See below for a simple guide how to
+    customize template.
 
 Creating custom views with your own template.
     While the fastest way to display information is with :php:class:`Grid` and
     :php:class:`ModelDetails`, quite often you need to obide by a custom presentation
     of data such as lists, view pannels and so on. Those views require creation
-    of custom views with custom templates.
+    of custom views with custom templates. See below for a simple guide.
 
 Assigning CSS classes to existing Views.
     :doc:`/css` supports a wide varietty of :doc:`/css/components` which can
     change the way how views are presented using :ref:`Component Definition Array`
 
-- Use special outline Views and composition.
+Use special outline Views and composition.
+    Some of the existing views such as :php:class:`Columns` allow you to outline
+    your content in a certain way. :php:class:`Form` also support the way to format them
+    (:doc:`views/form`). Other classes may also offer some several ways to present them.
+
+
+Please be familiar with all of the appraches listed above. Sometimes it's more
+desirable to use one way over another. For example instead of using Columns
+and H2-like tags in succession, you should rather use a view with custom template.
+
+Guide to customizing template
+-----------------------------
+
+First you need to decide if you want your changes to affect all object of desired
+type in the application or only specific object. For example, if you wish to change
+the way how :php:class:`Grid` looks, you may want to only one grid:
+
+- Only affect single object occurance
+-
