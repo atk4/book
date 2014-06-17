@@ -500,7 +500,7 @@ are added. For example, you might take your regular Model and add a new
     $author_join->addField('name')->type('readonly')->caption("Author's Name")
 
     // Now you can use this Model inside a Grid and it
-    // will show the author name for each book
+    // will show the authors name for each book
 
     $this->add('Grid')->setModel($book);
 
@@ -515,8 +515,8 @@ which you might have manually specified::
 
     $box2 = $box->newInstance();
 
-This wil render 2 boxes, but only one will contain HelloWorld. Here is
-slightly different approach::
+This wil render 2 boxes, but only first one will contain HelloWorld.
+Here is slightly different approach::
 
     class View_HelloBox extends View_Box {
         function init() {
@@ -548,7 +548,7 @@ not specified, then the class name is used instead. This makes meaningfull
 names for all objects::
 
     // Automatic naming
-    $my_object = $api->add('myClass');
+    $my_object = $app->add('myClass');
 
     // The name property is unique to the Application
     // and is based on the realm and class name
@@ -564,7 +564,9 @@ names for all objects::
     echo $my_object->name;          // realm_name_of_owner_foo
     echo $my_object->short_name;    // foo
 
-
+.. todo::
+  Should explain what "realm" means in example code comments above.
+  
 
 Setting Object Default Properties
 ---------------------------------
@@ -593,7 +595,7 @@ Object Properties
 -----------------
 
 As we have seen, ``AbstractObject`` provides a number of useful
-properties to every object in your app. Here's a complete reference:
+properties to every object in your application. Here's a complete reference:
 
 +--------------------+---------+----------------------------------------------------------------------------+
 | Property           | Access  | Description                                                                |
@@ -608,25 +610,26 @@ properties to every object in your app. Here's a complete reference:
 +--------------------+---------+----------------------------------------------------------------------------+
 | owner              | Read    | Points to the object which created this object through the call to `add()` |
 +--------------------+---------+----------------------------------------------------------------------------+
-| api                | Read    | Always points to the application object, the topmost object in the system  |
+| app                | Read    | Always points to the application object, the topmost object in the system  |
 +--------------------+---------+----------------------------------------------------------------------------+
-| model              | Read    | Points to Model objects set with `setModel()`                              |
+| model              | Read    | Points to Model object set with `setModel()`                               |
 +--------------------+---------+----------------------------------------------------------------------------+
-| controller         | Read    | Points to Controller objects set with `setController()`                    |
+| controller         | Read    | Points to Controller object set with `setController()`                     |
 +--------------------+---------+----------------------------------------------------------------------------+
-| auto_track_element | Default | Regulates whether adding this object will automatically                    |
-|                    |         | add a reference to the owner's `elements` array.                           |
-|                    |         | If set to `false`, the object will be 'detached'                           |
+| auto_track_element | Default | Regulates whether adding this object will automatically add a reference    |
+|                    |         | in the owner's `elements` array.                                           |
+|                    |         | If set to `false`, the object will be 'detached'.                          |
 +--------------------+---------+----------------------------------------------------------------------------+
 
 These properties are declared as ``public`` so that they can be read by
 Addons or compatibility controllers. It's bad style to change them directly.
 Here are the methods you should use to work with these properties:
 
-- changing `short_name`: use :php:meth:`AbstractObject::rename`
-- changing `elements`: use :php:meth:`AbstractObject::add`,
-  :php:meth:`AbstractObject::getElement`, :php:meth:`AbstractObject::destroy`
-- changing `owner`: use :php:meth:`AbstractObject::add` with new owner.
+- changing `short_name`: use :php:meth:`AbstractObject::rename` (avoid using this)
+- changing and accessing `elements`: use
+  :php:meth:`AbstractObject::add`, :php:meth:`AbstractObject::destroy`,
+  :php:meth:`AbstractObject::getElement`, :php:meth:`AbstractObject::hasElement`,
+- changing `owner`: use :php:meth:`AbstractObject::add` from new owner object.
 - changing `model`: use :php:meth:`AbstractObject::setModel`.
 - changing `controller`: use :php:meth:`AbstractObject::setController`.
 - changing `auto_track_element`: use `add(.., [ 'auto_track_element' => true ] )`
