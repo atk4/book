@@ -5,9 +5,10 @@ The principle of presenting the Web UI through a nested set of flexible
 objects is a fundamental concept in Agile Toolkit.
 
 But the Toolkit is a full stack framework so there are invisible objects
-too. For example, when a Form object is submitted, it communicates via
-Ajax with a Model object nested inside it. When you add a Model object,
-your form knows which fields to display and how to store the data.
+too. For example, when you add a Model object to Form object, your form
+knows which fields to display and how to display. And when Form object
+is submitted, it communicates via AJAX with a Model object nested inside
+it which knows how to store the data.
 
 .. php:class:: AbstractObject
 
@@ -17,11 +18,23 @@ your form knows which fields to display and how to store the data.
 
 .. php:method:: add($class, $options, $template_spot, $template_branch)
 
-  Creates new instance of `$class` as a child.
+  Creates new instance of `$class` as a child of this object.
+
+.. todo::
+  $template_spot and $template_branch should be moved to AbstractView,
+  because they shouldn't be in all objects (in AbstractObject).
 
 .. php:method:: init()
 
   Perform object initialization
+
+.. php:attr:: app
+
+  Link to application object.
+
+.. php:attr:: owner
+
+  Link to parent object.
 
 .. php:attr:: short_name
 
@@ -33,8 +46,8 @@ your form knows which fields to display and how to store the data.
 
 .. php:attr:: elements
 
-  Array containing references to all objects which have been added into
-  this class. Instead of some references, there might be "true" value. This
+  Array containing references to all objects which have been added to this
+  object. Instead of some references, there might be "true" value. This
   is to improve work of garbage collector.
 
 .. php:attr:: auto_track_element
@@ -63,25 +76,28 @@ Here is what happens next:
 #. Property :php:attr:`AbstractObject::$app` of a new object is set to point to
    `$page->app`;
 #. Property :php:attr:`AbstractObject::$name` and :php:attr:`AbstractObject::$short_name` is set.
-#. Owner's :php:attr:`AbstractObject::elements` is updated to contain either a
-   link to new object or a `true` value (depending on :php:attr:`auto_track_element`)
+#. Owner's :php:attr:`AbstractObject::$elements` is updated to contain either a
+   link to new object or a `true` value (depending on :php:attr:`$auto_track_element`
+   property of :php:class:`LoremIpsum` object).
 #. Other properties passed through 2nd argument of `add()` are set.
-#. If a new object is a :ref:`View`, then
+#. If a new object is a instance of :ref:`AbstractView`, then
   a) :ref:`Template` initialization is taking place and stored in :php:attr:`AbstractView::$template`
   b) :php:attr:`AbstractView::$spot` is set as per 3rd argument of :php:meth:`AbstractObject::add`
-
+.. todo::
+  If we move $template_spot and $template_branch to AbstractView, then this section should be
+  moved to AbstractView description.
 #. Hook `$app @ beforeObjectInit` is called.
 #. Method :php:meth:`AbstractObject::init` is called for `LoremIpsum`.
 #. Hook `$view @ afterInit` of a new object is being called.
-#. Reference to new object is returned to and stored in `$view`
+#. Reference to new object is returned to and stored in `$view` variable.
 
 When you create a new object, instead of using constructor, you should re-define
-init() method instead, because object will be linked with the parent and application
-as well as other properties will be already set for your object.
-
+init() method, because object will be linked with the parent and application as well
+as other properties will be already set for your object. So PHP class constructors
+should be avoided to use in your classes unless you really know what you're doing.
 
 Many objects are designed to reside within parent objects of a certain
-type. So if you add an obviously incompable object, such as a Grid
+type. So if you add an obviously incompatible object, such as a Grid
 paginator to a database Model, expect to see errors.
 
 Indirect Adding Of Objects
@@ -123,11 +139,12 @@ Adding Models with setModel()
 .. php:method:: setModel($model_or_class, ..)
 
   Associates object with supplied model. If string is supplied as first
-  argument, it will create instance of this class. The name of the class
-  will be :ref:`normalized` by prefixing Model_ if necessary.
+  argument, it will create instance of this class at first. The name of
+  the class will be :ref:`normalized` by prefixing it with "Model_" if
+  necessary.
 
-  This method sets $object->model (which you can access directly) and
-  returns it.
+  This method sets $object->model property (which you can access
+  directly) and returns it.
 
 .. php:attr:: model
 
@@ -136,7 +153,7 @@ Adding Models with setModel()
 
 
 Using ``setModel()`` will have different results in different contexts.
-For example adding a Model to a Page object will set the Model data into
+For example, adding a Model to a Page object will set the Model data into
 the page's template. Adding the same Model to a Grid object will
 populate the grid columns with data. Check out each class's
 documentation for details.
@@ -151,23 +168,23 @@ parent's ``model`` property, which is useful if you need to reuse it:
     $grid = $this->add('Grid');
     $form = $this->add('Form');
 
-    $grid->setModel('User');        // Sets the class Model_User
-    $form->setModel($grid->model);  // Reuses the same Model object
+    $grid->setModel('User');        // Create Model_User object and associate it with grid object
+    $form->setModel($grid->model);  // Reuses the same Model object and associate it with form too
 
 The first argument of ``setModel()`` is always either a class name or an
 existing model object, and in some classes, ``setModel()`` offers
 additional arguments.
 
-For example Grid allows you to specify a list of fields to use as
-columns as a second argument to ``setModel()``::
+For example, Grid allows you to additionally specify a list of fields
+to use as columns as a second argument to ``setModel()``::
 
     $grid = $page->add('Grid');
 
     // Define the columns to display
     $grid->setModel('Customer', array('name', 'email', 'zip'));
 
-The CRUD object is similar, but ``setModel()`` accepts two parameters,
-listing columns for viewing and columns for editing.
+The CRUD object is similar, but ``setModel()`` accepts two additional
+parameters, listing columns for viewing and columns for editing.
 
 Adding Controllers With setController()
 ---------------------------------------
@@ -175,6 +192,9 @@ Adding Controllers With setController()
 .. php:method:: setController($model_or_class, ..)
 
   Associates controller with model. Will create object if necessary.
+
+.. todo::
+  Need more info here like in setModel method
 
 In Agile Toolkit an object can use multiple Controllers. Controllers
 enhance the functionality of your object.
@@ -201,9 +221,9 @@ In the true spirit of jQuery, most object methods will return a
 reference to themselves (``return $this;``) so you can chain your method
 calls::
 
-     $this->add('FormAndSave')
-         ->setModel($model)
-         ->loadData($this->api->auth->get('id'));
+     $this->add('FormAndSave')   // return FormAndSave object
+         ->setModel($model)      // return Model object
+         ->loadData($this->api->auth->get('id')); // return Model object
 
 You can also chain calls to existing objects::
 
@@ -246,10 +266,11 @@ then the reference is not maintained. This is done to help garbage
 collector to get rid of those models you have created.
 
 This method is most frequently used to:
+
 - access Form fields
 - access Model fields
 
-In other cases it's adised that you keep reference to your object and use
+In other cases it's advised that you keep reference to your object and use
 it if you need to access your object later.
 
 Renaming and Moving
@@ -257,7 +278,7 @@ Renaming and Moving
 
 .. php:method:: rename($new_name)
 
-  Changes name for existing object. Avoid using this.
+  Changes name of existing object. Avoid using this.
 
 Agile Toolkit allows you to rename objects, although it's generally not
 recommended to rename your objects after you have added them.
@@ -342,7 +363,7 @@ property.
     $view->destroy();               // Removes object from parent
     unset($view);                   // Will destroy $view
 
-You don't need to call ``unset()`` if ``$view``\ or ``$model`` is a
+You don't need to call ``unset()`` if ``$view`` or ``$model`` is a
 local variable inside your method (it will be garbage collected by PHP)
 or if you are going to be using it for something else.
 
@@ -350,41 +371,41 @@ Objects With Global Scope
 -------------------------
 
 Instead of using PHP's GLOBAL scope, Agile Toolkit gives all objects the
-ability to access the Application class through its ``api`` property. If
+ability to access the Application class through its ``app`` property. If
 you want your object to be accessible from any object, add it to the
 Application class. This pattern is very similar to how plugins work in
 jQuery.
 
-Here's a simple Agile Toolkit app:
+Here's a simple Agile Toolkit application:
 
 ::
 
     include 'atk4/loader.php';
 
     // Create the API object
-    $api = new ApiFrontend();
+    $app = new App_Frontend();
 
     // Every object can access the API through the $api property
 
-    $my_object = $api->add('MyClass');
-    $my_object->api === $api;            // Is true
-    $my_object->api->url('login');       // Using an api object
+    $my_object = $app->add('MyClass');
+    $my_object->app === $app;            // Is true
+    $my_object->app->url('login');       // Using an app object
 
-    // Every object can use any class added to the API
+    // Every object can use any class added to the APP
 
-    $api->myclass = $api->add('MyClass2');
+    $app->myclass = $app->add('MyClass2');
 
-    $my_object->api->myclass->doFoo();
+    $my_object->app->myclass->doFoo();
 
 Initializing Objects
 --------------------
 
 In Agile Toolkit, we don't initialize objects with PHP's
-``__construct()`` method. Instead, when you add an object Agile Toolkit
-will automatically execute an ``init()`` method in the new object.
+``__construct()`` method. Instead, when you add an object, Agile Toolkit
+will automatically execute an ``init()`` method of the new object.
 
 This allows us to set properties used by the Runtime Object Tree such as
-``owner``, ``api`` and ``name`` before the object is initialized.
+``owner``, ``app`` and ``name`` before the object is initialized.
 
 Here's a short code extract from the password StrengthChecker Addon. It
 checks that you're adding the object to a password field.
@@ -429,8 +450,8 @@ Depending on your situation you can also re-define
 children's render is executed. See :def:`rendering` for more information.
 
 In some requests (see `request types`) your page and objects may be
-initialized but never rendered. This is the primary reason to move
-heavy business logic from init() to render()
+initialized, but never rendered. This is the primary reason to move
+heavy business logic from init() to render().
 
 Configuring Object Properties
 -----------------------------
@@ -463,7 +484,7 @@ Cloning Objects & newInstance()
 .. php:method:: newInstance()
 
   Creates object of same class as this one and add to the same owner. This is
-  not same as cloning.
+  not the same as cloning.
 
 
 In Agile Toolkit you will frequently be changing your objects after they
