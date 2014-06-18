@@ -171,8 +171,8 @@ parent's ``model`` property, which is useful if you need to reuse it:
     $grid = $this->add('Grid');
     $form = $this->add('Form');
 
-    $grid->setModel('User');        // Create Model_User object and associate it with grid object
-    $form->setModel($grid->model);  // Reuses the same Model object and associate it with form too
+    $grid->setModel('User');        // Create Model_User as data source
+    $form->setModel($grid->model);  // Reuses the same Model object for form
 
 The first argument of ``setModel()`` is always either a class name or an
 existing model object, and in some classes, ``setModel()`` offers
@@ -195,9 +195,6 @@ Adding Controllers With setController()
 .. php:method:: setController($model_or_class, ..)
 
   Associates controller with model. Will create object if necessary.
-
-.. todo::
-  Need more info here like in setModel method
 
 In Agile Toolkit an object can use multiple Controllers. Controllers
 enhance the functionality of your object.

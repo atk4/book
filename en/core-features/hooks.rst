@@ -341,70 +341,6 @@ The other Model hooks work in a similar way:
 Note: Some of those hooks will not supply $query if used in non-SQL
 Models.
 
-Useful Hooks
-------------
-
-Here are some of the most commonly used hooks, to give you an overview
-of what's on offer:
-
-Model Hooks
-~~~~~~~~~~~
-
-In many applications the most common use of hooks is in Models:
-
--  **beforeLoad(\ :math:`model, `\ query)** – called before an SQL
-   SELECT query is executed. This is called for both ``$model->load()``
-   and for iterating through a result set with foreach($model). This
-   hook is handy for applying extra options to your SQL query.
-
--  \*\*afterLoad(\ :math:`model)** &ndash; called after data has been loaded from SQL. You can now access model data with ``\ model->get()\ ``. Called for both``\ model->load()\`\`
-   and iterating. This hook is great for performing data manipulation
-   and normalization.
-
--  \*\*beforeSave(\ :math:`model)** &ndash; called when ``\ model->save()\`
-   is called. The hook runs inside an SQL transaction, so database
-   changes you perform here will be rolled back if the save is
-   unsuccessful. This hook is used for performing data modification
-   before it's been saved.
-
--  **beforeInsert(\ :math:`model, `\ query)** – called after the insert
-   query object has been created, but before it executes. The query is
-   passed as the 2nd argument, and you can change it in your callback
-   handler.
-
--  **afterInsert(\ :math:`model,`\ id)** – called after an insert
-   succeeds, but before the Model is re-loaded. You can break out of
-   this hook and return a substitute model. Used for overriding how a
-   Model is reloaded after an insert.
-
--  **beforeModify(\ :math:`model,`\ query)** – called before an UPDATE
-   SQL query is executed. This hook is great for changing update query
-   options.
-
--  **afterModify($model)** – called after an SQL query is executed but
-   before reloading. Note that if you access set() / get() here the
-   Model will be reloaded.
-
--  afterSave($model)\*\* – called after a successful save and reload.
-   This is the last hook to execute before the SQL transaction is
-   committed. Please note that ``beforeLoad`` and ``afterLoad`` will
-   also be called during the reloading of a Model. This hook is great
-   for hiding fields from a Model after saving, such as wiping your
-   password field.
-
-The other Model hooks work in a similar way:
-
--  beforeUnload($model)
--  afterUnload($model)
--  beforeDelete(\ :math:`model, `\ query) &ndash you can access the
-   record id through $model->id
--  afterDelete($model)
--  beforeDeleteAll($model)
--  afterDeleteAll($model)
-
-Note: Some of those hooks will not supply $query if used in non-SQL
-Models.
-
 Application Hooks
 ~~~~~~~~~~~~~~~~~
 
@@ -533,6 +469,4 @@ Note: If your object implements handlers for a few hooks and sets them
 inside init(), then after cloning such an object, it will not have the
 handlers cloned along with the object. Use of newInstance() should work
 fine.
-
-d
 
