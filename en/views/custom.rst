@@ -62,4 +62,13 @@ type in the application or only specific object. For example, if you wish to cha
 the way how :php:class:`Grid` looks, you may want to only one grid:
 
 - Only affect single object occurance
--
+- Create a new PHP Cass with the new look
+- Replace look for a standard class
+- Replace look and behaviour for standard class
+
+For a single occurence, you should use 4th argument to :php:meth:`AbstractObject::add`
+object.
+
+
+
+
