@@ -85,7 +85,8 @@ Useful Views in Agile Toolkit
     views/simple
     views/list
     views/menu
-    views/interactive
+    views/grid
+    views/form
     views/crud
     views/popover
 

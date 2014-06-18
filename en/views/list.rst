@@ -90,11 +90,141 @@ Extensions of Lister
 Lister is very simple class for iterating. There are also :php:class:`CompleteLister`
 and :php:class:`Grid` which further builds on the foundation of Lister:
 
- - CompleteLister repeats only some part of it's template not all the template like Lister.
- - Grid recognizes structured data and will prepare row template based on columns.
+- CompleteLister repeats only some part of it's template not all the template like Lister.
+- Grid recognizes structured data and will prepare row template based on columns.
 
 Listers are also serve as a foundation for objecs such as :php:class:`Menu` and
 :php:class:`View_Breadcrumb`
 
 
+Using with Iterators
+--------------------
 
+You can use lister with any object which supports iteration::
+
+    $page->add('Lister')
+        ->setSource(new DirectoryIterator('.'));
+
+If objects supports a non-hash while iterating, be sure to convert current_row
+in formatRow.
+
+Hook: formatRow
+---------------
+
+If you do not want to re-define a Lister class just to format the data, you
+can override formatRow hook instead. This can be cleverly used by controller::
+
+
+    class Controller_FileLister extends AbstractController {
+
+        function setFolder($folder) {
+            $this->owner->setSource( new DirectoryIterator($folder));
+
+            $this->owner->addHook('formatRow', $this);
+        }
+
+        function formatRow($l) {
+            $file = $l->current_row;
+
+            $l->current_row = [
+                'name'=>$file->getFilename(),
+                'size'=>$file->getSize(),
+                'type'=>$file->getType(),
+            ]
+        }
+    }
+
+And to use the controller above, use this::
+
+    $this->add('Lister', null, 'Files', 'Files')
+        ->setController('FileLister')
+        ->setfolder('.');
+
+.. todo:: verify this example
+
+
+CompleteLister
+==============
+
+
+.. php:class:: CompleteLister
+
+    While similar to :php:class:`Lister`, this class will use region {row} in
+    its template and after iterating it will replace it back into {rows} before
+    rendering the rest of its template.
+
+Additionally CompleteLister supports separators, totals row, alternating
+tag for odd/even rows and it's default template will use ``<ul><li>.. `` tags
+for presenting ``$name`` field of the model.
+
+
+
+Template Preservation Technique
+-------------------------------
+
+Sometimes the Designer creates an HTML template and sends it off to the
+Developer. The job of Developer now is to make template display actual data.
+
+In other words - a chunk of sample HTML must be enhanced with tags and stored
+inside ``template`` folder.
+
+The Template Preservation Technique is ability to leave HTML intact after
+the tags are added. For example, developer might send us the following
+markup for the article::
+
+    <h2>Header title goes here</h2>
+
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris feugiat
+    aliquam malesuada. Sed eget massa metus. Proin adipiscing mi quis enim</p>
+
+    <p>ullamcorper sagittis. Nullam vitae neque a nunc volutpat ullamcorper.
+    Integer sed leo sagittis, congue diam nec, semper justo. Etiam id augue</p>
+
+After adding tag, the template would look like this::
+
+    <h2>{title}Header title goes here{/}</h2>
+
+    {descr_html}
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris feugiat
+    aliquam malesuada. Sed eget massa metus. Proin adipiscing mi quis enim</p>
+
+    <p>ullamcorper sagittis. Nullam vitae neque a nunc volutpat ullamcorper.
+    Integer sed leo sagittis, congue diam nec, semper justo. Etiam id augue</p>
+    {/descr_html}
+
+The template looks similar to original making it much simpler for the Designer
+to change templates directly without developer's intervention.
+
+
+When it comes to listing things, we would receive this::
+
+    <h4>Interests</h4>
+    <ul>
+        <li>skiing</li>
+        <li>skating</li>
+        <li>running</li>
+    </ul>
+
+CompleteLister allows you to keep the list intact as you convert it into
+template::
+
+    <h4>{title}Interests{/}</h4>
+    <ul>
+        {rows}{row}
+        <li>{name}skiing{/}</li>
+        {/row}
+        <li>skating</li>
+        <li>running</li>
+        {/rows}
+    </ul>
+
+When this template is used with CompleteLister, it would:
+
+#. Clone tempalte for ``row``
+#. Delete region ``rows``
+#. Render cloned region for each iteration and append to ``rows``
+
+This also allows you to destroy lister much safer if no elements have
+been rendered.
+
+.. todo:: write article about this.
