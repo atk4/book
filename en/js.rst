@@ -15,10 +15,11 @@ suited for the most demanding UI practices.
 .. toctree::
     :maxdepth: 1
 
-    js/chains
-    js/events
+    js/chain
+    js/use
     js/api
     js/univ
 
 
 
+.. todo:: Add http://agiletoolkit.org/learn/understand/jsapi (and review)
