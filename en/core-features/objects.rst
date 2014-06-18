@@ -81,15 +81,18 @@ Here is what happens next:
    property of :php:class:`LoremIpsum` object).
 #. Other properties passed through 2nd argument of `add()` are set.
 #. If a new object is a instance of :ref:`AbstractView`, then
-  a) :ref:`Template` initialization is taking place and stored in :php:attr:`AbstractView::$template`
-  b) :php:attr:`AbstractView::$spot` is set as per 3rd argument of :php:meth:`AbstractObject::add`
-.. todo::
-  If we move $template_spot and $template_branch to AbstractView, then this section should be
-  moved to AbstractView description.
+
+   #. :ref:`Template` initialization is taking place and stored in :php:attr:`AbstractView::$template`
+   #. :php:attr:`AbstractView::$spot` is set as per 3rd argument of :php:meth:`AbstractObject::add`
+
 #. Hook `$app @ beforeObjectInit` is called.
 #. Method :php:meth:`AbstractObject::init` is called for `LoremIpsum`.
 #. Hook `$view @ afterInit` of a new object is being called.
 #. Reference to new object is returned to and stored in `$view` variable.
+
+.. todo::
+    If we move $template_spot and $template_branch to AbstractView, then initTemplate section should be
+    moved to AbstractView description.
 
 When you create a new object, instead of using constructor, you should re-define
 init() method, because object will be linked with the parent and application as well
@@ -566,7 +569,7 @@ names for all objects::
 
 .. todo::
   Should explain what "realm" means in example code comments above.
-  
+
 
 Setting Object Default Properties
 ---------------------------------
