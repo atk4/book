@@ -154,9 +154,12 @@ AbstractView js() method
 
 Please see :doc:`/js` for documentation on js() method.
 
+**********
+View Class
+**********
 
-View class core features
-========================
+Core features
+=============
 
 .. php:class:: View
 
@@ -239,7 +242,7 @@ To learn more about AgileCSS components, icons and badges see :doc:`/css`
 Setting components
 ------------------
 
-.. php:method: addComponents
+.. php:method:: addComponents
 
     Assign several components to element as defined in supplied hash.
 

@@ -102,3 +102,20 @@ Next is an example::
 
     $m=$this->menu->addMenu(['Installation', 'icon'=>'network']);
     $m->addItem('ATK Installs', 'installations');
+
+Using Menu with Model
+---------------------
+
+.. php:method:: setModel
+
+    Associate Menu with Model
+
+Menu object supports use of Model. It will then iterate throug model :ref:`data set`
+and initialize menu items. More importantly - Menu support :ref:`Hierarchy Models`
+and will automatically create sub-menus as necessary.
+
+The model must have the following fields:
+
+- name - will be used as menu label
+- link - destination URL for the page
+- icon - if specified, will show icon
