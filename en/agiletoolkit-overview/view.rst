@@ -1,3 +1,5 @@
+.. _view:
+
 User Interface (Views)
 ######################
 
@@ -131,12 +133,16 @@ Composite Views
 ===============
 
 In Agile Toolkit a view consisting of other views is called a Composite View.
+Some examples of composite views are :php:class:`CRUD` (which consists of
+:php:class:`Grid` and :php:class:`Form`) and also :php:class:`Form` (consisting
+of :php:class:`Form_Field` and :php:class:`Button`)
 
 Controller and Model
 ====================
 
 As you probably have noticed - the Views we have used so far work pretty
-good without models or controllers. You can, however, link it up a model:
+good without models or controllers. In real world application, you are most
+likely to link the view with :ref:`data source` (by specifying a Model)::
 
     $poem->setModel('Book')->tryLoadAny();
 

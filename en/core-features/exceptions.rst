@@ -1,5 +1,7 @@
-Exceptions
-~~~~~~~~~~
+Exceptions Details
+==================
+
+Exception basics and introduction, see :php:meth:`AbstractObject::exception`.
 
 Agile Toolkit takes full advantage of exceptions. You can read more
 about exceptions in ...
@@ -42,4 +44,51 @@ a property:
 
 Third argument to exception() can specify a default exception code which
 can further be accessed through "code" property.
+
+
+Bundled Exception Classes
+-------------------------
+
+.. php:class:: BaseException
+
+    A standard agile-toolkit friendly exception
+
+.. php:class:: Exception_Logic
+
+    Exception showing some problem in business logic
+
+.. php:class:: Exception_ForUser
+
+    Excetpion which must be shown to user nicely.
+
+.. php:class:: Exception_Obsolete
+
+    Signaling that some feature is obsolete.
+
+.. php:class:: PathFinder_Exception
+
+    rename into Exception_PathFinder
+
+.. php:class:: SQLException
+
+    is this still used?
+
+.. php:class:: ObsoleteException
+
+    isn't this obsolete class obsolete?
+
+
+
+Exception Handling
+------------------
+
+Uncaught exceptions bubble up to the application class, are caught and
+passed on to :php:class:`App_CLI::caughtException`.
+
+In most cases exceptions will end up in :php:class:`Logger` or a similar
+error-reporting controller.
+
+
+
+
 

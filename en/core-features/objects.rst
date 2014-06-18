@@ -103,6 +103,37 @@ Many objects are designed to reside within parent objects of a certain
 type. So if you add an obviously incompatible object, such as a Grid
 paginator to a database Model, expect to see errors.
 
+Arguments for add() method
+--------------------------
+
+When calling add, you can pass up to 4 arguments. First two are for any object,
+while 3rd and 4th are for view objects only::
+
+    $this->add( <class>,  <options>,  <spot>,  <template> );
+
+<class>
+    String with name of the class. Can preceed with namespace and a slash (``myaddon/View``),
+    can also be either initialized (which was already added elsewhere) or non-initialized object
+    (creaded using ``new``).
+
+<options>
+    See :ref:`object default properties` if it is passed as array. If string
+    argument is used, then will be considered a desired short_name. See
+    :ref:`object naming`.
+
+<spot>
+    Overrides default destination of object's output. By default it is "Content".
+    See :ref:`recursive rendering` and :php:meth:`AbstractView::defaultSpot`
+
+<template>
+    Either a string, array or object defining where object should take object.
+    See :ref:`template definition`. If not specified -
+    :php:meth:`AbstractView::defaultTemplate` is used.
+
+The last 2 arguments must only be used when you adding :ref:`View <view>` inside a
+:ref:`View <view>`.
+
+
 Indirect Adding Of Objects
 --------------------------
 
@@ -533,6 +564,7 @@ Here is slightly different approach::
 
 Now you'll have two boxes with "Hello, World" in each of them.
 
+.. _object naming:
 
 Object Naming
 =============
@@ -567,6 +599,8 @@ names for all objects::
 .. todo::
   Should explain what "realm" means in example code comments above.
 
+
+.. _object default properties:
 
 Setting Object Default Properties
 ---------------------------------
@@ -634,3 +668,79 @@ Here are the methods you should use to work with these properties:
 - changing `controller`: use :php:meth:`AbstractObject::setController`.
 - changing `auto_track_element`: use `add(.., [ 'auto_track_element' => true ] )`
 
+
+
+
+
+Using Session
+=============
+
+Session management
+~~~~~~~~~~~~~~~~~~
+
+All objects in Agile Toolkit come with four methods to access session
+data: memorize(), learn(), forget() and recall(). You can specify the
+“key”, which will be used in scope of a current object:
+
+::
+
+    $obj1 = $this->add('MyObject');
+    $obj2 = $this->add('MyObject');
+
+    $obj1->memorize('test','foo');
+
+    $obj2->recall('test'); //returns null
+    $obj1->recall('test'); // returns foo
+
+You can learn more about Agile Toolkit management under the Application
+section.
+
+See :php:meth:`AbstractObject::memorize`;
+
++------------+--------------------------------+-------------------------------------------------------------------------------+
+| Method     | Arguments                      | Description                                                                   |
++============+================================+===============================================================================+
+| memorize   | name, value                    | Store value in session under name                                             |
++------------+--------------------------------+-------------------------------------------------------------------------------+
+| recall     | name, default                  | If value for name was stored previously return it, otherwise return default   |
++------------+--------------------------------+-------------------------------------------------------------------------------+
+| forget     | name                           | Remove previously memorized value from session                                |
++------------+--------------------------------+-------------------------------------------------------------------------------+
+| learn      | name, value1, value2, value3   | Memorize first non-null argument.                                             |
++------------+--------------------------------+-------------------------------------------------------------------------------+
+
+Exceptions
+==========
+Agile Toolkit offers an enhancement to the traditional way of how you are
+working with Exceptions in PHP.
+
+.. php:method:: exception($message, $class_postfix)
+
+  Message will be localized. if you specify class_postfix it will be added
+  at the end of $default_exception property, e.g. "_Logic".
+
+.. php:attr:: default_exception
+
+  Which exception class to use by default.
+
+
+Normally you would consider something like this for exception::
+
+    throw new My_Exception('val1', $info2);
+
+This appoarch often makes developer come up with exception hierarchy and
+refactor the code too often to make exception work well. Agile Toolkit
+has the foundation for a more simplifed way to report exceptions::
+
+    throw $this->exception('Person is too old')
+      ->addMoreInfo('age', $age);
+
+There are several imporant things to note:
+
+- Exception of the class is defined in ``$this`` object already. Often
+  a one class will generate same type of errors. For instance, your Page
+  class would most likely produce exceptions related to incorrect page arguments,
+  while your Model would most likely produce exception related to business logic.
+
+
+For more information, exmples and list of bundled exception classes, see :doc:`exceptions`

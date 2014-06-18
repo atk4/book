@@ -2,6 +2,7 @@
 Core UI View Features
 *********************
 
+
 Core features of all View objects are implemented in classes :php:class:`AbstractView`
 and :php:class:`View`.
 
@@ -66,6 +67,7 @@ AbstractView core features
 
     Default spot. 'Content'
 
+.. _template definition:
 
 Template Definition
 -------------------
@@ -94,6 +96,8 @@ is emptied.
 
 .. seealso:: To better understand template behaviours, see excercise: :doc:`/excercises/view-envelope`
 
+
+.. _recursive rendering:
 
 Recursive Rendering
 -------------------
