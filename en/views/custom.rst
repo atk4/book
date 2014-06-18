@@ -66,9 +66,31 @@ the way how :php:class:`Grid` looks, you may want to only one grid:
 - Replace look for a standard class
 - Replace look and behaviour for standard class
 
+Copy ``atk4/template/grid.html`` into ``template/mygrid.html``
+
 For a single occurence, you should use 4th argument to :php:meth:`AbstractObject::add`
-object.
+object ``[ 'mygrid' ]``
+
+To affect multiple objects, extend ``Grid`` and override :php:meth:`AbstractView::defaultTemplate`::
+
+    function defaultTemplate() {
+        return [ 'mygrid' ];
+    }
+
+If you are willing to affect all ``Grid``s, name your templtae ``template/grid``.
+This will take precedence over atk4 template folder.
 
 
+Page templates
+--------------
 
+A most common object to have template replaced is a Page. It is in fact so common, that
+the page will actually look for a custom template.
 
+#. URL request to /item/list
+#. If ``Application::page_item_list(Page $p)`` exist, it's called.
+#. If file page/item/list.php exists and contains page_item_list class, it's used.
+#. Otherwise blank :php:class:`Page` is used.
+
+Regardless of which of the above was used, :php:class:`Page` will attempt to load
+``template/page/item/list.html``.

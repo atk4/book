@@ -78,6 +78,8 @@ Bundled Exception Classes
     isn't this obsolete class obsolete?
 
 
+.. todo: add more exceptions here
+
 
 Exception Handling
 ------------------
