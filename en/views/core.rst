@@ -21,6 +21,10 @@ When you are creating your own view, think if if you would need an functionality
 of modifying class, style of your view in your PHP code. If that's not necessary,
 use AbstractView.
 
+Another significant difference is that :php:meth:`View::setModel` will
+automatically fill out template tags with model values if they are loaded, but
+AbstractView will not do such a thing.
+
 If unsure - use View.
 
 
@@ -309,4 +313,15 @@ definition, you can extend set() method of your view::
     }
 
 .. tip:: Always document your extensinos to Component definitions.
+
+
+Using with Model
+================
+
+.. php:method:: setModel()
+
+    This method will not only associate view with the model, but will
+    auto-fill values of the model inside template tags just before
+    rendering itself.
+
 

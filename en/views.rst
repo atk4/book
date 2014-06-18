@@ -83,8 +83,8 @@ Useful Views in Agile Toolkit
     :maxdepth: 2
 
     views/simple
-    views/menu
     views/list
+    views/menu
     views/interactive
     views/crud
     views/popover

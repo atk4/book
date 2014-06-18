@@ -184,20 +184,20 @@ directories of :ref:`resource` ``template``.
 Changing template contents
 --------------------------
 
-.. php:method: set(tag, value)
+.. php:method:: set(tag, value)
 
     Escapes and inserts value inside a tag. If passed a hash, then each
     key is used as a tag, and corresponding value is inserted.
 
-.. php:method: setHTML(tag, value)
+.. php:method:: setHTML(tag, value)
 
     Identical but will not escape. Will also accept hash similar to set()
 
-.. php:method: append(tag, value)
+.. php:method:: append(tag, value)
 
     Escape and add value to existing tag.
 
-.. php:method: appendHTML(tag, value)
+.. php:method:: appendHTML(tag, value)
 
     Similar to append, but will not escape.
 
@@ -216,6 +216,10 @@ Example::
 
 Rendering template
 ------------------
+
+.. php:method:: render
+
+    Converts template into one string by removing tag markers.
 
 Ultimately we want to convert template into something useful. Rendering
 will return contents of the template without tags::
