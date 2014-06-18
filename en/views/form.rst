@@ -58,8 +58,8 @@ Agile Toolkit uses POST to submit all forms through an AJAX request.
     :maxdepth: 1
 
     form/core
-    form/fields
-    form/validation
-    form/layouts
+    form/field
+    form/layout
 
+For form rule-based validation you should look into :php:class:`Validator`.
 

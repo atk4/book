@@ -72,7 +72,7 @@ Button directly extends :php:class:`View` and retains it's methods such as
 Button also inherits a JavaScipt binding techniques: :php:meth:`AbstractView::js`
 and :php:meth:`AbstractView::on` for custom actions.
 
-.. php:class:: View_Button
+.. php:class:: Button
 
     Implements a UI Button.
 
@@ -129,3 +129,15 @@ and :php:meth:`AbstractView::on` for custom actions.
 .. php:method:: addButton()
 
     Adds a new button into set.
+
+
+**********
+Breadcrumb
+**********
+
+.. php:class:: Breadcrumb
+
+    Implements a default Breadcrumb for :php:class:`Page`
+
+
+For more information see: :php:meth:`Page::addCrumb`.
