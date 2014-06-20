@@ -10,7 +10,8 @@ Contents
    views
    css
    js
-   models
+   model
+   app
    controllers
    addons
    console-and-shells
