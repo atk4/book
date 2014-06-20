@@ -227,29 +227,3 @@ as:
 If you are willing to create your own field, be sure to extend it from
 the "Field" class.
 
-Expressions
-~~~~~~~~~~~
-
-Normally, when Model builds a query it asks every field listed in the
-"actual fields" list to add itself into ``dsql()``. Fields will call the
-``field()`` method to update the query of the model, from inside of the
-``updateSelectQuery()``. The "Field\_Expression" redefines the method to
-insert user-defined expression into the model query.
-
-Additionally expression field will also change number of flags.
-``editable()`` will return false.
-
-Expression filed introduces one new property "expr" which stores your
-expression which can be expressed either as a string, as a DSQL
-expression or as a call-back. Use ``set()`` to specify the expression.
-Model have a method ``addExpression()``, which will create expression
-field for you:
-
-::
-
-    $model->addExpression('full_name')
-        ->set('concat(name," ",surname)');
-
-When you are building expressions, be mindful that the fields you are
-referenced are SQL fields and are not model fields.
-

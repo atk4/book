@@ -12,7 +12,7 @@ Contents
    js
    model
    app
-   controllers
+   controller
    addons
    console-and-shells
    development
