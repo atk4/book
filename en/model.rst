@@ -58,4 +58,5 @@ chapter for "Application" for more information.
     model/relation
     model/dsql
     model/sql
+    model/mongo
 

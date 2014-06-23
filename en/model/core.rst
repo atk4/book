@@ -2,23 +2,153 @@
 Model Core
 **********
 
-In our software data is arranged into logical tables or collections.
-It's sensible to associate data with a set of relevant actions. PHP
-objects are an ideal container for both the data and the set of
-methods which can be applied on the data.
+.. php:class:: Model
+
+    Implementation of Model paradigm in Agile Toolkit
+
+Introduction
+============
+
+In your software you will be dealing with structured data:
+
++----+--------+---------+--------+
+| id | name   | surname | gender |
++====+========+=========+========+
+| 1  | John   | Smith   | m      |
++----+--------+---------+--------+
+| 2  | Betty  | Shark   | f      |
++----+--------+---------+--------+
+| 3  | Alfred | Hitch   | m      |
++----+--------+---------+--------+
+
+This data is stored in a special dedicated location we call Data Source.
+As you see - data structure is consistent throughout the set (table) and
+can be broken into 4 fields. One of those fields is a unique identifier (id)
+
+If your data has the above properties, then you can take advantage of a
+Model class to access the data.
+
+Models offer syntactic sugar and use unification for various data sources.
+With a unified interface various UI objects can safely access and modify data.
+
+Example Usage
+-------------
+
+The following example demonstrates simple data manipulation, to give you
+better feeling of what model is::
+
+    $person->load(2);
+    echo $person['name'];    // outputs 'Betty'
+
+    $person['surname']='Smith';
+    $person->save();         // Updates surname to 'Smith'
+
+Features
+--------
+
+In Agile Toolkit model class have the following features:
+
+- Defining column structure and types
+- Creating one model by extending another
+- Loading one row at a time, manipulating and saving it
+- Defining custom methods dealing with data
+- Iterating through available records (:ref:`model dataset`)
+- Callbacks (e.g. afterLoad or beforeSave)
+- Reference traversal
+
+Additionally with the help of Data Source capabilities more features
+can be available:
+
+- Adding conditions (filters) on models
+- Executing actions on all of the Data Set (update all) without iterating
+- Defining skip / count (limit) for records
+- Storing complex values in model
+
+A relational database managers (RDBMS) or SQL Servers are capable of
+more features and Agile Toolkit provides ways to take advantage of those
+features without manually writing queries:
+
+- Joining tables
+- Using expressions
+- Using sub-selects based on model
+- Applying action with existing conditions
+- Operating with "actual" field subset
+
+Agile Toolkit standard Data Controllers try to provide you with access to
+the features of underlying Data Source, however they will not emulate
+features lacking in the Database.
+
+- One primary Data Source per model
+- Several secondary Data Sources (caches) per model
+- Knowledge of Data Source capabilities
+
+Class Structure
+---------------
+
+I have already introduced the main class - :php:class:`Model`, which can
+operate with any Data Source::
+
+    $m = $this->add('Model', [ 'table' => 'user' ]);
+    $m->setSource('SQL');
+    $m->addField('name');
+    $m->addField('surname');
+
+However this Model implementation may not support all the features of the
+Data Source. A more advanced Data Sources will have a dedicated model class
+you can use::
+
+
+    $m = $this->add('SQL_Model', [ 'table' => 'user' ]);
+    $m->addField('name');
+    $m->addField('surname');
+    $j = $m->join('contact_info','user_id');
+    $j->addField('address');
+    $m->addCondition('gender', 'm');
+    $m->addExpression('full_name')->set('concat(name, " ", surname)');
+
+Limitations and Recommendations
+-------------------------------
+
+In order to make working with model more predictable, you must remember
+that you must follow these rules:
+
+- Each record must have an ``id`` (numeric or alphanumeric)
+- Each ID must correspond to hash of values (by fields), where key is (alphanumeric)
+- Model should have field defined (and field types/properties)
+- One field is a Title Field (normally "name")
+- Model can only access items within data-set (matching conditions)
+- Model can only create items which will match match data-set conditions
+
+
+Creating Data Controllers
+-------------------------
+
+Data Controllers implement :php:meth:`Model::load` / :php:meth:`Model::save`
+method and some other extensions to the model. If you would like to learn
+more about Data Controllers, see :php:class:`Controller_Data`. The rest
+of this chapter will focus on defining and using models with existing
+controllers.
+
+If you are interested in specific data source features, see:
+
+- :php:class:`Controller_Data_Array` - static array access for models
+- :php:class:`Controller_Data_Session` - storing data in Session
+- :php:class:`Controller_Data_Mongo` - Accessing MongoDB collections
+- :php:class:`Controller_Data_SQL` - PDO-based SQL access. See :php:class:`SQL_Model`
+- :php:class:`Controller_Data_Memcache` - Memory Cache
+- :php:class:`Controller_Data_RESTful` - Accessing remote API through Model
+
+
+Model Data
+==========
+
+PHP objects are an ideal container for both the data and the set of
+methods which can be applied on the data. Agile Toolkit Models enhance
+basic objects with some other handy methods. Model hides the Data Controller
+from you and lets you simply interact with data without need to know where and
+how data is stored.
 
 .. figure:: /figures/model.png
-
-Normally a single model object represents a single row of data, however
-this approach is impractical. Agile Toolkit uses a different approach
-for the models, where the model can load any row of data or even perform
-operations on all data set. If you have prior experience with other data
-frameworks such as Doctrine, Active Record or some other ORM, you should
-pay attention to how "Model" works in Agile Toolkit.
-
-Models in Agile Toolkit are not limited to SQL, but can in fact work
-with many different data drivers. All of the drivers, however, will
-assume few things about your model records:
 
 - Each record have unique ID which can be number or string.
 - Each record may have value of a String or a Hash
@@ -33,7 +163,7 @@ may match a sub-set of available data in table due to conditions.
 .. _model dataset:
 
 The Dataset
-~~~~~~~~~~~
+-----------
 
 Dataset is determined by 3 things: 1) Driver 2) Table 3) Conditions.
 
@@ -62,7 +192,7 @@ Here are some examples:
 +-------------------------+-----------------------------+---------------------+------------------------------+
 
 Relational Model
-~~~~~~~~~~~~~~~~
+----------------
 
 A significant segment of the database implementations are so called
 RDBMS - Relational Database Management Systems. Notable for their

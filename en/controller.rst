@@ -8,9 +8,9 @@ Controllers
 .. toctree::
     :maxdepth: 1
 
+    controller/pagemanager
     controller/router
     controller/pathfinder
-    controller/pagemanager
     controller/logger
     controller/validator
     controller/tmail
