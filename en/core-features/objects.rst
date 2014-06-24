@@ -1,5 +1,5 @@
-Adding objects
-==============
+Using objects
+=============
 
 The principle of presenting the Web UI through a nested set of flexible
 objects is a fundamental concept in Agile Toolkit.

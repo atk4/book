@@ -6,6 +6,12 @@ URL Parsing
 Base Path and URL of your Web App
 ---------------------------------
 
+.. php:attr:: base_url
+
+.. php:attr:: base_path
+
+.. php:attr:: page
+
 Not always you will install your web application in the root of your
 site. Sometimes it may be located in a sub-folder. Agile Toolkit does a
 great job at determining where you have installed your application and
@@ -33,6 +39,12 @@ property).
 Determining Page
 ----------------
 
+.. php:method: parseRequestedURL
+
+.. php:method: getRequestURI
+
+.. php:method: setURL
+
 Everything what comes after the Base Path is considered to be page.
 Because class names may only contain underscores and may not contain
 slashes - all underscores in your pages will be converted into slashes.
@@ -53,6 +65,8 @@ without mod\_rewrite.
 
 Debugging
 ---------
+
+.. php:method: debug
 
 If you suspect that Agile Toolkit is not detecting your base parameters
 properly, you might want to turn on debugging for Page Manager object by

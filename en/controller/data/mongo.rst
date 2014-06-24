@@ -17,3 +17,6 @@ This controller implements access to MongoDB::
 
     $this->add('CRUD')->setModel($m);
 
+The table name corresponds with the collection. The ID field used
+by Mongo is called ``_id``, however the ID in your model will be
+set according to :php:attr:`Model::id_field` property.
