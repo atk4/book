@@ -93,3 +93,65 @@ Altirnative validation ways (such as open-id)
 =============================================
 
 TODO
+
+
+Replacing Login form
+====================
+
+Hook 'createForm' can be used to create and return your own login
+form. You can also extend Auth controller and override method createForm
+
+Enhancing Login form
+====================
+
+Auth class defines a hook updateForm, which can be used to enhance login form::
+
+    $auth->addHook('updateForm', function($auth){
+        $auth->form->owner                          // link after form
+            ->add('View')
+            ->setElement('a')
+            ->setAttr('href',$this->app->url('forgot'))
+            ->set('Forgot password?');
+        $auth->form->addClass('atk-push-small');    // add gap after form
+    });
+
+
+Remember that you can destroy some of the original fields if you wish.
+
+
+Enabling Cookie Authentication (Remember Me)
+============================================
+
+If you wish to add or change anything on the log-in form, you can either use a
+3rd party controller.
+
+Here you can use a special Auth Controller which will enable cookie-based
+login persintance. It will add checkbox with label Remember Me. It will
+also enhance log-out functionality to destroy the cookie. If user closes
+the browser, the cookie will log-in him next time::
+
+    $a->add('auth/Controller_Cookie');
+
+.. note:: The implementation of cookie controller stores password in a secure
+    cookie on the browser. If you wish to store a special authentication token
+    instead, you should use your own implementation.
+
+
+
+Enabing 3rd party authentication
+================================
+
+A 3rd party autehnticaiton is implemented through ``romaninsh/opauth`` controller
+and supports any strategy which is supported by "opauth" (PHP implementation for OAuth)
+
+Here is a sample::
+
+    $op=$a->add(
+        'romaninsh/opauth/Controller_Opauth',
+        array(
+            'register_page'=>'ofinish',
+            'default_action'=>array('redirect_me'=>'my'),
+        )
+    );
+    $op->addStrategy('github,facebook,twitter,google');
+

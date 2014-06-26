@@ -296,6 +296,10 @@ inherited from View, you can also specify nested components to the icon::
         'effect'=>'info'
     ] );
 
+If you wish that icon is placed to the right from the text, use ``icon-r``.
+
+Setting the text to ``false``, will only display icon.
+
 Other views, such as :php:class:`Menu_Advanced_Item` will define additional
 extensions such as ``icon2``, ``badge``, etc.
 
