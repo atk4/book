@@ -69,6 +69,17 @@ to the field.
     If $position is a hash, then 'position' key will be used for positioning
     and the rest will be passed down into ``add('Button', <here>)``.
 
+Additionally the button will automatically be linked with the field in the
+following way - every time the field value changes, it's set as a "val"
+data attribute of the button. This allows you to easily capture value
+of a linked field when button is clicked (see :php:meth:`Button::onClick`)::
+
+    $field = $form->addField('name');
+    $field->addButton('Greet')->onClick(function($b, $data){
+        return "Hello, ".$data['val'];
+    } );
+
+
 .. php:method:: beforeField()
 
 .. php:method:: afterField()
