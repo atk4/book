@@ -87,6 +87,7 @@ field in the middle relative to :php:class:`Form_Field` class objects.
     controller/auth
     controller/db
     controller/url
+    controller/process
     controller/dummy
 
 
