@@ -14,7 +14,7 @@ method, which might be easier to use::
 Do not use chain returned by on() in other chains.
 
 Using on() with selector
-------------------------
+========================
 
 Example::
 
@@ -26,7 +26,7 @@ Example::
     $form->on('blur',  'input')->css([ 'background' => '']);
 
 Using with PHP callback
------------------------
+=======================
 
 On also accepts callable argument, so you can actually pass a PHP call-back::
 
@@ -39,7 +39,7 @@ callback method receives 2 arguments. First ($js) is the chain which selects
 affected element, in our case - input field.
 
 Receiving JS data in PHP callback
----------------------------------
+=================================
 
 The other argument is data() of that element. jQuery implements $.data()
 for associtaing JavaScript properties with the field.
@@ -71,7 +71,7 @@ Although this seems like a regular JS Chain, reload() will actually pass an
 URL of current page (including :ref:`Sticky GET`) and cut options (See :ref:`cutting`)
 for object reloading.
 
-Two-page reload.
+Off-page reload.
 ================
 
 Sometimes the original object is not available to cretae a reload(). Assuming
@@ -108,3 +108,51 @@ Resulting code::
     $b2->js('click', $this->js()->_selector('.do-reload')->trigger('reload'));
 
 
+
+.. _url component array:
+
+*******************
+URL Component Array
+*******************
+
+All the methods in Agile Toolkit which accept URL, can also accetp URL component
+array. Suppose you have a div on your page and a button::
+
+    $f = $this->add('Form',null,null,['form/compact']);
+    $f_name = $f->addField('name');
+    $f_surname = $f->addField('surname');
+
+    $b = $this->add('Button')->set('Load data');
+
+    $d = $this->add('View');
+
+    $b->js('click', $d->js()->atk_load($this->api->page('mypage')));
+
+When you click on the button it will load the contens of the page inside View.
+See also :ref:`Cutting` for more information about partial page loads.
+
+To use URL component array, first surround the URL you pass to atk_load with
+brackets::
+
+    $b->js('click', $d->js()->atk_load( [ $this->api->page('mypage')) ] );
+
+Then you can add additional arguments to this array::
+
+    $b->js('click', $d->js()->atk_load( [
+        $this->api->page('mypage')),
+        'name' => 'John',
+        'surname' => 'Smith',
+    ] );
+
+
+This will pass the 2 GET arguments to "mypage" with specified values. However
+we can also use JavaScript expressions with URL Comonent Array to automatically
+pull value of our fields::
+
+    $b->js('click', $d->js()->atk_load( [
+        $this->api->page('mypage')),
+        'name' => $f_name->js()->val(),
+        'surname' => $f_surname->js()->val()
+    ] );
+
+Now you can pass values from the page on a button-click.
