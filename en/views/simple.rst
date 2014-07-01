@@ -121,6 +121,10 @@ and :php:meth:`AbstractView::on` for custom actions.
     A second argument to this method could be a confirmation message
     which will appear before callback being triggered.
 
+    Callback will receive two arguments. 1. The button object. 2. POST
+    data which would be comming form ``$('button').data()``. See
+    Documentation on :ref:`ajaxec`.
+
 
 .. php:class:: View_ButtonSet
 
