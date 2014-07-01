@@ -74,6 +74,7 @@ General Techniques of User Interface
 
     views/templates
     views/core
+    views/view
     views/custom
 
 Useful Views in Agile Toolkit

@@ -150,6 +150,7 @@ location(url)
 
 Redirects browser to a specified URL. URL can be passed as :ref:`url component array`
 
+.. _univ_page:
 
 page(url)
 ---------

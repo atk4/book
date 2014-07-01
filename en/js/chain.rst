@@ -1,3 +1,6 @@
+
+.. _javascript chain:
+
 *********************
 JavaScript PHP Chains
 *********************

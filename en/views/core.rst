@@ -154,181 +154,83 @@ AbstractView js() method
 
 Please see :doc:`/js` for documentation on js() method.
 
-**********
-View Class
-**********
 
-Core features
-=============
+.. _cutting:
 
-.. php:class:: View
+Cutting Output
+==============
 
-View class assumes that you have a HTML element in your template which can
-accept class, style and other attributes. Here is a approximate tempalte
-for the standad View class::
+Each request to Agile Toolkit goes through a full initialization cycle. It
+initializes the routing, finds the page and initializes all objects on that
+page.
 
-    <{element}div{/}
-        id="{$_name}"
-        class="{$class}"
-        style="{$style}"
-        {$attributes}
-    >{$Content}</{element}div{/}>
+On large systems the number of pages may be large, yet contents of each
+indidividual page will still be manageable, so this technique scales well
+in practice.
 
-The meaning of {$_name} tag was already explained in :doc:`templates` section,
-and the {$Content} tag is used throughout Agile Toolkit as a default spot for
-objects, so that any objects you would add inside a View would output themself
-into {$Content} spot.
+In some situations however only a part of the page needs to be rendered. In
+desktop frameworks this behaviour is called "repaint". In Agile Toolkit
+we refer to it as :ref:`cutting`.
 
-The other tags here can be populated by methods of a View class.
+To experience cutting in the basic form, try adding ?cut_page=1 to
+your request.
 
-.. php:method:: setElement
+Agile Toolkit will respond with HTML of the page only and will not render
+menu, header or footer.
 
-    Change the HTML element which view would output. By defaut it will output ``div``.
-    See :php:class:`H1` for an example.
+Cutting Page
+------------
 
+When you have page A and page B open side-by-side in the browser, normally
+they would share quite a lot:
 
-.. php:method:: setClass
+- Header and Footer markup
+- Navigation menu
+- Other parts of :ref:`Layout <Layout>` (except Content)
+- JavaScript libraries
+- CSS dependencies
 
-    Set an CSS class to a view element.
+You can save quite a lot of processing if user could jump from A to B
+without reloading common components.
 
-.. php:method:: addClass
+In Agile Toolkit this is very easy to achieve. Add the following two pages::
 
-    Add new CSS class to the view without overwriting previously assigned classes.
+    // page/one:
 
-.. php:method:: removeClass
+    $this->add('Button')->set('Go to page 2')->js('click')
+        ->univ()->page($this->app->url('two'));
 
-    Remove one of the assigned classes
+    // page/two:
 
-.. php:method:: setStyle
+    $this->add('Text')->set('You are now on page 2');
 
-    Replace style definition of objects HTML element. Accepts two arguments for
-    property and value. ``setStyle('background', 'red')``
+Now if you open first page in your browser and click the button, only HTML
+for second page will be loaded and substituted approprietly.
 
-.. php:method:: addStyle
+Agile Toolkit will also propely load JavaScript dependencies for second page
+and initialize all the events.
 
-    Add new in-line style definition to existing ones. Accepts two arguments for
-    property and value.a ``addStyle('background', 'red')``
+:ref:`univ_page` will properly use cut_page argument to render page object only.
 
-.. php:method:: removeStyle
+Cutting Objects
+---------------
 
-    Remove style specified by the property: ``removeStyle('background')``
+With ``cut_object=`` argument it's possible to specify a name of a particular
+object and only that object will be rendered. This technique is automatically
+used when objects reload themselves. If you look inside borwsers ispector::
 
-.. php:method:: setText
+    $this->add('Button')->set(rand(1,99))->js('click')->reload();
 
-    Replaces content with a text. (automatically localized and escaped)
+This button would reload itself by cutting it's own HTML only. You can
+observe another behaviour - only :ref:`JavaScript Chains <javascript chain>`
+of that particular object and it's children will be included in resulting
+output.
 
-.. php:method:: setHTML
+This is done specifically to avoid binding actions multiple times to elements
+which are not being replaced with reload().
 
-    Replaces content with a HTML string. Will not localize or escape.
+Cutting Regions
+---------------
 
-.. php:method:: set
-
-    Similar to setText, but can contain array with component definitions and icon.
-    See: :ref:`_Component Definition Array`.
-
-
-
-.. _Component Definition Array:
-
-Component Definition Array
-==========================
-
-View and some other objects based on Views will accept a so called Component
-Definition arrays. This allows you to use "label" arguments to define additional
-components and elements (such as icons, badges, etc)
-
-To learn more about AgileCSS components, icons and badges see :doc:`/css`
-
-Setting components
-------------------
-
-.. php:method:: addComponents
-
-    Assign several components to element as defined in supplied hash.
-
-Components in Agile CSS are defined by adding class ``atk-<type>-<value>``. Some
-example are: ``atk-size-mega``, ``atk-swatch-red``, ``atk-effect-info``,
-``atk-box`` and ``atk-shape-rounded``. When you need to set several of them,
-you can use addComponents method::
-
-    $this->add('View')->set('Hello, World')
-        ->addComponents( [ 'box'=>true, 'size'=>'mega', 'effect'=>'info' ] );
-
-To save you some time a component definition array format can be used when
-calling set::
-
-    $this->add('View')->set( [
-        'Hello, World' ,
-        'box'=>true,
-        'size'=>'mega',
-        'effect'=>'info'
-    ] );
-
-The string in this hash appearing without key will be assigned to ``0=>``. Other
-hash keys will be reconstructed into atk- components.
-
-Defining Icon
-^^^^^^^^^^^^^
-
-View allows you to define property 'icon' by setting it to desired name of the icon.
-The view will automatically add necessary markup to prepend your text with an icon::
-
-    $this->add('View')->set( [
-        'Hello, World' ,
-        'icon'=>'heart',
-        'box'=>true,
-        'size'=>'mega',
-        'effect'=>'info'
-    ] );
-
-Because icon is implemented through an :php:class:`Icon` view, which is also
-inherited from View, you can also specify nested components to the icon::
-
-
-    $this->add('View')->set( [
-        'Hello, World' ,
-        'icon'=>[
-            'heart',
-            'swatch'=>'red'
-        ],
-        'box'=>true,
-        'size'=>'mega',
-        'effect'=>'info'
-    ] );
-
-If you wish that icon is placed to the right from the text, use ``icon-r``.
-
-Setting the text to ``false``, will only display icon.
-
-Other views, such as :php:class:`Menu_Advanced_Item` will define additional
-extensions such as ``icon2``, ``badge``, etc.
-
-Extending Component Definition Array
-====================================
-
-If you wish that your object could handle more extensins to the component
-definition, you can extend set() method of your view::
-
-    function set($data){
-        if(is_array($data)){
-            if($data['my_icon']){
-                $this->add('Icon',null,'MyIconSpot')->set($data['my_icon']);
-            }
-            unset($data['my_icont']);
-        }
-        return parent::set($data);
-    }
-
-.. tip:: Always document your extensinos to Component definitions.
-
-
-Using with Model
-================
-
-.. php:method:: setModel()
-
-    This method will not only associate view with the model, but will
-    auto-fill values of the model inside template tags just before
-    rendering itself.
-
-
+This technique is currently obsolete, but used to output only specified region
+of view template.
