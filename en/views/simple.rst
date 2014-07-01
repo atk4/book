@@ -125,6 +125,8 @@ and :php:meth:`AbstractView::on` for custom actions.
     data which would be comming form ``$('button').data()``. See
     Documentation on :ref:`ajaxec`.
 
+    Callback can also return string which will be considered to be a
+    success message.
 
 .. php:class:: View_ButtonSet
 
