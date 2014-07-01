@@ -49,7 +49,7 @@ Agile CSS framework.
 
 
 In some cases you do want to add a custom CSS. One option would be to change
-the ``boilerplate`` HTML file (template/html.jade and template/html.html),
+the :ref:`boilerplate_html` (template/html.jade and template/html.html),
 however if you simply looking to add an extra CSS file to Agile Toolkit
 add this into your application class::
 
