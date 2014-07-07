@@ -39,8 +39,10 @@ window.lang = "{{ language }}";
 	<div class="related row">
 		<div class="columns three root-link">
 			<a href="http://www4.agiletoolkit.org/">{{ shorttitle|e }}</a>
+
 		</div>
 		<div class="columns nine">
+			<a style="float: right" class="button " href="{{ pathto('search' ) }}">Search</a>
 			<ul class="inline breadcrumb">
 			{%- for parent in parents %}
 			<li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
