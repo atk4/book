@@ -198,7 +198,7 @@ This implements a more convenient way to add :php:class:`Paginator` inside Grid.
 
 .. php:method:: addQuickSearch
 
-Wrapper for adding :php:class:`QuickSearch`.
+Wrapper for adding :php:class:`QuickSearch` ::
 
     $g = $this->add('Grid');
     $g->setModel('People');
@@ -210,20 +210,20 @@ Expanders
 
 .. php:method:: format_expander
 
-Expander is a special formatter (``format_expander``), which will create a clicable column. If format is added to existing column, then the original
+Expander is a special formatter called ``format_expander``, which creates a clicable column. If format is added to existing column, then the original
 text will be placed on the expanding button.
 
 The work of Expander relies on ui.atk5_expander.js widget, which will add additional row after the clicked one and load data through AJAX.
 
 Exander will open a sub-page of a current page with the same name as the column name::
 
-    function page_book(){
+    function page_book() {
         $grid = $this->add('Grid');
         $grid->setModel('Book');
         $grid->addColumn('expander', 'details');
     }
 
-    function page_book_details(){
+    function page_book_details() {
         $this->add('View_ModelDetails')
              ->setModel('Book')
              ->load($this->app->stickyGET('book_id'));
@@ -232,7 +232,7 @@ Exander will open a sub-page of a current page with the same name as the column 
 As you can see in the example, the expander will also pass the row ID inside an two arguments:
 
 - $GET['id']
-- $GET[$table_name.'_id'];
+- $GET[$table_name . '_id'];
 
 While in most cases you would want just to grab the ``id``, if you have a nested expanders, you will need to use the second format. The table name is taken from :php:attr:`Model::table` property.
 
@@ -244,7 +244,7 @@ Making Sortable Fields
 You might have already noticed that if you use :php:meth:`Field::sortable` in your model definition, then Grid gains ability to sort by this column.
 The sorting is turned off by default, but it's relatively easy to add it. 
 
-We recommend you to always use the Field sortable flag, however you might want to know that there is also a method:
+We recommend you to always use the :php:meth:`Field::sortable` flag, however you might want to know that there is also a method:
 
 .. php:method:: makeSortable
 
@@ -271,58 +271,54 @@ Extra HTML Classes
 You can find full list of table decorator components in :doc:`/css/tables`,
 but you can apply them to your Grid like this::
 
-    // select the ones you need
     $grid->addClass('atk-table-zebra');
 
     $grid->addClass('atk-table-outline');
 
     $grid->addClass('atk-table-bordered');
 
+You can also use combination of two or more styles as well e.g.
+::
+    $grid->addClass('atk-table-zebra atk-table-bordered');
+
 
 Final Implementation Notes
 --------------------------
 
--  Values placed for current row but missing from within the next row will keep appearing inside row template. You should must make at least pass NULL as a value of a ``current_row`` hash, to clear out previous values.
+-  Values placed for current row but missing from within the next row will keep appearing inside row template. You should consider passing ``NULL`` as a value of a ``current_row`` hash, to clear out previous values.
 -  Unless you specifically want to output safe HTML, you should store your value inside ``current_row`` property - this property is automatically escaped when the row is rendered.
 -  Avoid sub-selects inside your formatters as it will have major performance impact.
 -  Grid automatically selects all ``visible`` fields of the model.
 -  When using ``setModel()`` you can override list of field and order in which they are displayed.
 -  Automatically assigns appropriate formatters for your fields.
 -  ``addPaginator`` integrates ``Paginator`` which breaks results into pages with defined number of rows.
--  ``addQuicksearch`` adds ``QuickSerarch`` form in the corner for filtering result by one of the specified columns or using model's
-   custom ``like()`` function.
+-  ``addQuicksearch`` adds ``QuickSerarch`` form in the corner for filtering result by one of the specified columns or using model's custom ``like()`` function.
 -  Allows you to use custom ``Iterator`` with ``setModel`` but you would need to call ``addColumn`` manually.
--  ``addFormatter`` can use multiple formatters per field, e.g. "money" and "nowrap".
+-  With ``addFormatter`` can use multiple formatters per field, e.g. "money" and "nowrap".
 -  Scalable: grid does not create object or perform queries on every row.
 -  automatically keeps up ``totals`` which can be appended as yet another row at the bottom of grid.
 -  ``sortable`` grids automatically get sorting control.
 -  ``addButton`` is a wrapper for adding buttons into button set on top of grid.
--  handles situations with no records.
+-  Grid automatically handles situations with no records.
 -  Change TD-styling with ``setTDParam``.
 -  Support for Column add-ons.
 -  integrates with ``selectable`` and ``ui.atk4_checkboxes`` with ``addSelectable``.
 
-Obviously Grid inherits all the features of the View as well as you can manipulate ``$grid->model`` in any way model can be manipulated making
-it possible to change styling, positioning, size and rendering of a grid, conditions, order or other properties of a select query.
+Grid inherits all the features of the View as well as you can manipulate ``$grid->model`` in any way model can be manipulated making it possible to change styling, positioning, size and rendering of a grid, conditions, order or other properties of a select query.
 
 .. todo:: move this to :php:class:`Model_Field`
 
 How to create and use Formatters?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-While most situations can be solved with generic grid, it does need to display data in a reasonable formats. But how does Grid determine a type
-of your column?
+While most situations can be solved with generic grid, it does need to display data in a reasonable formats. But how does Grid determine a type of your column?
 
 Field ``type()``
 ^^^^^^^^^^^^^^^^
 
-Model's field ``type()`` method can be used to specify the type of the column. There are defined set of supported types, and the primary
-purpose of this setting is to define how data is stored.
+Model's field ``type()`` method can be used to specify the type of the column. There are defined set of supported types, and the primary purpose of this setting is to define how data is stored.
 
-When you call ``grid->setModel`` it creates a new object - ``Controller_MVCGrid`` which is responsible for populating columns
-inside Grid and also matches data-types into grid column types. For example ``list``, ``int`` type is displayed as ``text``, ``money`` uses
-formatter also named ``money`` and ``text`` is displayed using ``shorttext`` formatter, which shows just a fragment of your long text
-fields.
+When you call ``grid->setModel`` it creates a new object - ``Controller_MVCGrid`` which is responsible for populating columns inside Grid and also matches data-types into grid column types. For example ``list``, ``int`` type is displayed as ``text``, ``money`` uses formatter also named ``money`` and ``text`` is displayed using ``shorttext`` formatter, which shows just a fragment of your long text fields.
 
 If you want to implement your own type and it's associations, look into `Creating your own Grid Controller <TODO>`__
 
