@@ -2,6 +2,8 @@
 Model Fields
 ============
 
+.. php:class:: Field
+
 Model uses objects to describe each of it's field. Therefore when you
 create a model with 10 fields, it would populate at least 12 objects:
 
@@ -123,6 +125,9 @@ beforeSave hook, this will have a system-wide access regardless of who
 is accessing the model. Even if you create a validation like that, you
 can still use model's DSQL to manually create a query which would bypass
 the validation.
+
+
+.. _actual fields:
 
 Actual Fields
 ~~~~~~~~~~~~~

@@ -78,6 +78,22 @@ The render() method of Lister will read next iteration of source / model inside
     Called after iterating and may be redefined to change contents of
     :php:attr:`Lister::current_row`.
 
+Example::
+
+    function formatRow() {
+        parent::formatRow();
+
+        $this->current_row['name'].='-san';
+    }
+
+You can additionally use 'formatRow' hook on the Lister to register your
+callback method::
+
+    // Add honorifics to names
+    $lister -> addHook('formatRow', function($l) {
+        $l->current_row['name'].='-san';
+    });
+
 .. php:method:: render
 
 The resulting values in this hash after formatting will be populated into the
