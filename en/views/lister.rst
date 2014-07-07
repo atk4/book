@@ -60,6 +60,8 @@ Iteration Logic
     you can pass anything iterateable to setSource() as long as elements of
     iterating produce either a string or array.
 
+.. php:method:: getIterator
+
 .. php:attr:: current_row
 
     Hash containing current row
@@ -71,18 +73,20 @@ Iteration Logic
 The render() method of Lister will read next iteration of source / model inside
 :php:attr:`Lister::current_row` and also set :php:attr:`Lister::current_id`.
 
-.. php:meth:: formatRow
+.. php:method:: formatRow
 
     Called after iterating and may be redefined to change contents of
     :php:attr:`Lister::current_row`.
+
+.. php:method:: render
 
 The resulting values in this hash after formatting will be populated into the
 template. The template is :php:meth:`GiTemplate::render`-ed and the resulting
 string is :php:meth:`AbstractView::output`-ed.
 
 .. tip:: IMPORTANT: if your iterator will return certain field for ROW1, but
-will not have that field set for ROW2, the template of a lister will retain
-the previous value.
+    will not have that field set for ROW2, the template of a lister will retain
+    the previous value. As a result some values will get "stuck" in the template.
 
 Extensions of Lister
 --------------------
@@ -95,6 +99,93 @@ and :php:class:`Grid` which further builds on the foundation of Lister:
 
 Listers are also serve as a foundation for objecs such as :php:class:`Menu` and
 :php:class:`View_Breadcrumb`
+
+
+Pagination
+^^^^^^^^^^
+
+Pagination in Agile Toolkit is implemented through a helper view. Paginator can
+be used on Lister, CompleteLister, Grid or any descendants. Lister can be placed
+inside of the CompleteLister or Grid (in a dedicated tab). Due to the way how
+Lister repeats all of it's template, you can't place Paginator in it, so you
+would need to make it adjacent to the list.
+
+.. php:class:: Paginator
+
+.. php:attr:: ipp
+.. php:attr:: skip
+.. php:attr:: range
+
+Usage example with Lister::
+
+    $l = $this->add('Lister', null, 'People', 'People');
+    $l -> setModel('People');
+
+
+    $pg = $this->add('Paginator', null, 'PeoplePaginator');
+    $pg -> setSource($l->model);
+
+Now interacting with the paginators model will automatically affect the
+limit of Lister's model. Here is how to use it with CompleteLister::
+
+
+    $l = $this->add('CompleteLister', null, 'People', 'People');
+    $l -> setModel('People');
+    $l -> add('Paginator');     // by default uses spot {$Paginator} and not Content
+
+Finally to add paginator to a Grid you can use a helper method - :php:meth:`Grid::addPaginator`.
+
+
+Adding Filter Form
+^^^^^^^^^^^^^^^^^^
+
+Sometimes you would want to display a Lister, CompleteLister or Grid with a Filter.
+A filter may appear either on the side or in the pop-over. For now I will assume
+that it's physically located inside the same Page view.
+
+.. note:: While it's technically possible to use Filter Form with Lister, you
+    will probably experience problem with :ref:`js->reload() <reloading>` Lister
+    because it typically does not have a containing <div>.
+
+While you could use a regular :php:class:`Form` to implement your Form, I recommend
+that you use Filter:
+
+.. php:class:: Filter
+
+.. php:method:: useWith
+
+.. php:method:: addButtons
+
+Usage example::
+
+    $l = $this->add('CompleteLister');
+    $l -> setModel('Person');
+
+    $q = $this->add('Filter');
+    $q -> useWith($l);
+    $q -> addField('name');
+
+As you add fields into filter, they will automatically be used as filters inside
+model of the lister. Our example above will allow to filter by ``name`` field.
+
+QuickSearch
+^^^^^^^^^^^
+
+.. php:class:: QuickSearch
+
+.. php:method:: useFields
+
+While QuickSearch preserves the functionality of a regular field it will come
+with one field which will be matched against multiple field in your model.
+
+
+    $l = $this->add('CompleteLister');
+    $l -> setModel('Person');
+
+    $q = $this->add('Filter');
+    $q -> useWith($l);
+    $q -> addField('age');
+    $q -> useFields([ 'name', 'surname' ]);
 
 
 Using with Iterators
@@ -143,88 +234,3 @@ And to use the controller above, use this::
 .. todo:: verify this example
 
 
-CompleteLister
-==============
-
-
-.. php:class:: CompleteLister
-
-    While similar to :php:class:`Lister`, this class will use region {row} in
-    its template and after iterating it will replace it back into {rows} before
-    rendering the rest of its template.
-
-Additionally CompleteLister supports separators, totals row, alternating
-tag for odd/even rows and it's default template will use ``<ul><li>.. `` tags
-for presenting ``$name`` field of the model.
-
-
-
-Template Preservation Technique
--------------------------------
-
-Sometimes the Designer creates an HTML template and sends it off to the
-Developer. The job of Developer now is to make template display actual data.
-
-In other words - a chunk of sample HTML must be enhanced with tags and stored
-inside ``template`` folder.
-
-The Template Preservation Technique is ability to leave HTML intact after
-the tags are added. For example, developer might send us the following
-markup for the article::
-
-    <h2>Header title goes here</h2>
-
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris feugiat
-    aliquam malesuada. Sed eget massa metus. Proin adipiscing mi quis enim</p>
-
-    <p>ullamcorper sagittis. Nullam vitae neque a nunc volutpat ullamcorper.
-    Integer sed leo sagittis, congue diam nec, semper justo. Etiam id augue</p>
-
-After adding tag, the template would look like this::
-
-    <h2>{title}Header title goes here{/}</h2>
-
-    {descr_html}
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris feugiat
-    aliquam malesuada. Sed eget massa metus. Proin adipiscing mi quis enim</p>
-
-    <p>ullamcorper sagittis. Nullam vitae neque a nunc volutpat ullamcorper.
-    Integer sed leo sagittis, congue diam nec, semper justo. Etiam id augue</p>
-    {/descr_html}
-
-The template looks similar to original making it much simpler for the Designer
-to change templates directly without developer's intervention.
-
-
-When it comes to listing things, we would receive this::
-
-    <h4>Interests</h4>
-    <ul>
-        <li>skiing</li>
-        <li>skating</li>
-        <li>running</li>
-    </ul>
-
-CompleteLister allows you to keep the list intact as you convert it into
-template::
-
-    <h4>{title}Interests{/}</h4>
-    <ul>
-        {rows}{row}
-        <li>{name}skiing{/}</li>
-        {/row}
-        <li>skating</li>
-        <li>running</li>
-        {/rows}
-    </ul>
-
-When this template is used with CompleteLister, it would:
-
-#. Clone tempalte for ``row``
-#. Delete region ``rows``
-#. Render cloned region for each iteration and append to ``rows``
-
-This also allows you to destroy lister much safer if no elements have
-been rendered.
-
-.. todo:: write article about this.

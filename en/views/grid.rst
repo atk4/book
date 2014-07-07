@@ -1,5 +1,8 @@
 Grid
 ====
+
+.. php:class:: Grid
+
 What is Grid?
 -------------
 
@@ -164,3 +167,22 @@ Formatter needs to be defined as a method of a grid.
     $grid->addColumn('smiley','my field');
 
 .. |Grid Zebra Image| image:: /figures/grid2-zebra.png
+
+
+
+.. php:method:: addPaginator
+
+This implements a more convenient way to add :php:class:`Paginator` inside Grid. Example::
+
+    $g = $this->add('Grid');
+    $g ->setModel('People');
+    $g ->addPaginator();
+
+.. php:method:: addQuickSearch
+
+Wrapper for adding :php:class:`QuickSearch`.
+
+    $g = $this->add('Grid');
+    $g ->setModel('People');
+    $g ->addQuickSearch(['name', 'surname']);
+

@@ -55,6 +55,8 @@ it in data()::
 
 The functionality of on() PHP callback is implemented using a VirtualPage.
 
+.. _reloading:
+
 **************
 View Reloading
 **************
