@@ -51,7 +51,7 @@ A new web platform
 
 In 1990, when applications were switching from DOS to Windows they discovered
 that they no longer need to worry about drawing dialog boxes, menus or buttons on the
-screen. A modern windowing systems do those things fro applications more efficiently and more
+screen. A modern windowing systems do those things for applications more efficiently and more
 consistently.
 
 Agile Toolkit is the same to your web application. Not only it is a
@@ -147,7 +147,7 @@ In our application so far we have defined and created objects, such as:
 model, crud, button and error-box. Agile Toolkit only work with objects.
 
 The classes of those objects would inherit from ``AbstractObject``, so
-all objects have a common anchestor.
+all objects have a common ancestor.
 
 Objects live in a Runtime-Tree
 ==============================
