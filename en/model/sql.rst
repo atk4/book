@@ -375,6 +375,84 @@ PROPER abstraction of query fields and expressions.
 Any of the models above can be used with views or for addressing
 individual records.
 
+Callback and complex subqueries
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When Model is building query, for all the fields which needs to be selected
+(actual fields) it is going to generate a field expression and pass
+it into :php:meth:`dsql::field`.
+
+You may pass a call back to the :php:meth:`Field_Expression::set` and
+create quite complex sub-selects::
+
+    $m->addExpression('last_payment_amount')->set(function($m){
+        $m_payment = $m->refSQL('Paments');
+        $m_payment->addCondition('is_settled', true);
+        $m_payment->setOrder('date', 'desc');
+        $m_payment->setLimit(1);
+        return $m->fieldQuery('amount');
+    });
+
+You can even take the model outside of the callback if you need to have multiple
+fileds::
+
+
+    $m_payment = $m->refSQL('Paments');
+    $m_payment->addCondition('is_settled', true);
+    $m_payment->setOrder('date', 'desc');
+    $m_payment->setLimit(1);
+
+    $m->addExpression('last_payment_amount')->set(function($m) use ($m_payment) {
+        return $m_payment->fieldQuery('amount');
+    });
+    $m->addExpression('last_payment_date')->set(function($m) use ($m_payment) {
+        return $m_payment->fieldQuery('date');
+    });
+
+While convenient, this approach will generate multiple sub-queries - one for
+each field. You should consider having a sub-select instead or you can overload
+ref() field.
+
+
+Reloading of ref() method
+-------------------------
+
+By default ref allows user to traverse through relations. It can be used, however,
+to add all sorts of advanced traversal techniques.
+
+Here we can associate a complex field type with a model::
+
+    class User extends Model {
+
+        public $table='user';
+
+        function init() {
+            parent::init();
+
+            $this->setSource('Mongo');
+
+            $this->addField('name');
+            $this->addField('surname');
+            $this->addField('interests')->system(true)->defaultValue([]);
+        }
+
+        function ref($ref){
+            if($ref == 'Interests'){
+
+                $m = $this->add('Model');
+                $m->setSource($this['interests']);
+
+                $self=$this;
+
+                $m->addHook('afterSave,afterDelete', function($m_interest) use ($self){
+                    $self['interests'] = $m_interest->getRows();
+                    $self->saveLater();
+                });
+            }
+        }
+    }
+
+
 Iterating through records
 -------------------------
 
@@ -507,4 +585,5 @@ let's create a CRUD for editing list of chapters of a current book:
 You might have already noticed one example with refSQL. When you are
 defining relations you can also specify which fields to use. The next
 chapter will look into Model() in details.
+
 
