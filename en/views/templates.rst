@@ -214,6 +214,18 @@ Example::
     echo $template->render();
 
 
+Using ArrayAccess with Templates
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You may use template object as array for simplified syntax::
+
+    $template['name'] = 'John';
+
+    if(isset($template['has_title'])) {
+        unset($template['has_title']);
+    }
+
+
 Rendering template
 ------------------
 
