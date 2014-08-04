@@ -279,6 +279,54 @@ or secrets. To implement a custom authentication mechanism, redefine
 To customize authentication on per-endpoint basis, redefine
 ``Endpoint_REST::authenticate()``
 
+Logging Access
+^^^^^^^^^^^^^^
+
+If you implement logRequest method in your APP class, then it will be
+called to log request. Here is how I approach loging in my application::
+
+    function init(){
+        parent::init();
+
+        // Create global model for logging.
+        $this->api_log=$this->add('Model_ApiLog')
+            ->set('status','init')
+            ->save();
+
+        // Saving instantly allows us to have record of ALL the requests
+        // even failed ones. You can experement with saveLater here.
+    }
+
+    function logRequest($method, $args) {
+
+        // Collect more information about the request
+        $this->api_log['interface']=$this->page;
+        $this->api_log['status']='request';
+        $this->api_log['method']=$method;
+        $this->api_log['params']=$args;
+
+        // Don't save right away, wait until we finish executing.
+        $this->api_log->saveLater();
+    }
+
+    function logSuccess() {
+
+        // Request was completed successfully
+        $this->api_log['status']='complete';
+    }
+
+    function caughtException($e){
+
+        // When receiving exception, we change request status accordingly
+        $this->api_log['status']='exception';
+        return parent::caugthException($e);
+    }
+
+Like any Agile Toolkit application, you can further extend caugthException
+to handle advanced error logging.
+
+
+
 Error Control
 ~~~~~~~~~~~~~
 
