@@ -1,5 +1,5 @@
 ***********************************
-CRUD Custom Action Column Excercise
+Grid Custom Action Column Excercise
 ***********************************
 
 In this excercise I will guide you through customizing Grid's columns and
