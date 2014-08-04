@@ -322,6 +322,9 @@ called to log request. Here is how I approach loging in my application::
         return parent::caugthException($e);
     }
 
+.. note:: I recommend you to implement Model_ApiLog using lightweight
+    data controller, such as Redis.
+
 Like any Agile Toolkit application, you can further extend caugthException
 to handle advanced error logging.
 
