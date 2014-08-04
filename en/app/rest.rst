@@ -6,7 +6,7 @@ Implementing a basic RESTful service for your web application. A routing for App
 is slightly different as it does not have pages, but it has interfaces instead.
 
 Requirements
-~~~~~~~~~~~~
+============
 
 To create API for your application, you must start by creating a new
 :ref:`Application Interface`. A minimum set of files are::
@@ -67,7 +67,7 @@ file::
 More info on :ref:`Configuration`
 
 Testing
-~~~~~~~
+-------
 
 Open ``http://localhost:8888/api/v1/book`` and it should show you list
 produced by your book model.
@@ -172,7 +172,7 @@ To handle output of structured data, you must pass results through
 perform output filtering as well as pagination of your data.
 
 Pagination
-~~~~~~~~~~
+^^^^^^^^^^
 
 A default API of Agile Toolkit supports optional arguments:
 
@@ -185,7 +185,7 @@ recommend you to pass them through ``outputMany()`` wrapper to apply
 those conditions.
 
 Output filtering
-~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^
 
 Inside your endpoint class you may define some additional rules to limit
 input / output for certain methods. For example, if your entity contains
@@ -205,7 +205,7 @@ to extend it to add additional exclusions:
     }
 
 Output Formats
-~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^
 
 By default the JSON is used for output. If you wish to output data in a
 different format, you should redefine method ``App_REST::encodeOutput``.
@@ -224,7 +224,7 @@ different format, you should redefine method ``App_REST::encodeOutput``.
     }
 
 Authentication and Access Control
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 
 Typically in the multi-user system, your models would belong to a user,
 and must not be accessible to anyone else. In your Agile Toolkit
@@ -279,8 +279,8 @@ or secrets. To implement a custom authentication mechanism, redefine
 To customize authentication on per-endpoint basis, redefine
 ``Endpoint_REST::authenticate()``
 
-Logging Access
-^^^^^^^^^^^^^^
+Logging Requests
+----------------
 
 If you implement logRequest method in your APP class, then it will be
 called to log request. Here is how I approach loging in my application::
@@ -325,17 +325,13 @@ called to log request. Here is how I approach loging in my application::
 Like any Agile Toolkit application, you can further extend caugthException
 to handle advanced error logging.
 
-
-
 Error Control
-~~~~~~~~~~~~~
+-------------
 
 Agile Toolkit relies on PHP exceptions for producing error messages.
 Exceptions are raised inside the ``exception()`` method of respective
 object. Using the right object can be helpful to define the right error
-context.
-
-::
+context::
 
     throw $endpoint->exception('Argument format is invalid');
 
@@ -345,9 +341,7 @@ context.
 
 When exception is executed, typically it would result in a 500 Internal
 Server Error. If you want to specify a different code, you can do so by
-specifying type and/or code.
-
-::
+specifying type and/or code::
 
     throw $model->exception('Access to the record is not permitted','AccessDenied',403);
 
@@ -372,7 +366,7 @@ When creating new records or updating existing records, sometimes you
 wouldn't want certain fields to be changed.
 
 General Notes on developing end-points
---------------------------------------
+======================================
 
 Before you start working on your API end-point class, here are some tips
 for you:
@@ -393,13 +387,13 @@ for you:
    ``Api`` class.
 
 Different page patterns
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 Because you are in control of routing, you can design a different
 patterns. Usually it's not a good idea to create very deep structures.
 
 Combining data
-~~~~~~~~~~~~~~
+--------------
 
 Because each API request introduces latency to your user application,
 sometimes you would want to merge results:
@@ -418,7 +412,7 @@ sometimes you would want to merge results:
     }
 
 Using without model
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 Endpoint does not necessarily need to have a model. If you don't specify
 ``$model_class`` you can define your own methods for getting and
