@@ -108,8 +108,8 @@ Create file ``admin/template/column/actions.html``::
     </div>
 
 .. note:: I will then compress all of the HTML into a single line, because
-spaces inside HTML markup between elements can cause undesired glitches
-inside your interface. I recommend you to look into JADE.
+    spaces inside HTML markup between elements can cause undesired glitches
+    inside your interface. I recommend you to look into JADE.
 
 The above markup uses Agile CSS to create a button-set with two buttons. Each
 button will have only icon and the second button will be red. I have taken
