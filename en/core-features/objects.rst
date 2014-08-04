@@ -59,6 +59,10 @@ it which knows how to store the data.
   it will be garbage collected.
 
 
+.. php:property:: model
+
+  points to current model
+
 Direct Adding Of Objects
 ------------------------
 

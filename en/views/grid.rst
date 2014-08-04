@@ -133,6 +133,8 @@ Interractive Columns
 
 .. php:method:: format_delete
 
+.. _grid_custom_formatters:
+
 
 Defining your own formatters
 ----------------------------
@@ -166,7 +168,7 @@ Example which makes column bold::
             '</b>';
     }
 
-.. php:method:: ssetTDParam
+.. php:method:: setTDParam
 
 Using the setTDParam method it's possible to implement bold without the extra element::
 
@@ -242,7 +244,7 @@ Making Sortable Fields
 ======================
 
 You might have already noticed that if you use :php:meth:`Field::sortable` in your model definition, then Grid gains ability to sort by this column.
-The sorting is turned off by default, but it's relatively easy to add it. 
+The sorting is turned off by default, but it's relatively easy to add it.
 
 We recommend you to always use the :php:meth:`Field::sortable` flag, however you might want to know that there is also a method:
 

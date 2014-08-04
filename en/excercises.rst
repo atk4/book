@@ -5,3 +5,4 @@ Some awesome Excercises
     :maxdepth: 1
 
     excercises/view-envelope
+    excercises/custom-actions
