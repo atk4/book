@@ -6,3 +6,4 @@ Some awesome Excercises
 
     excercises/view-envelope
     excercises/custom-actions
+    excercises/form-ajaxec
