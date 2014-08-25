@@ -21,6 +21,7 @@ Consider the following code on your page::
     $m_users->addItem(['Subscribers', 'icon'=>'chart-line'], 'subscribers');
     $m_users->addItem(['Plans',       'icon'=>'basket'],     'plans');
 
+    $new_comments = "27"; //should be dynamic, set as static here to show functionality
     $menu->addItem(['Comments','icon'=>'chat-1', 'badge'=>[$new_comments,'swatch'=>'red']]);
     $menu->addItem(['Statistic', 'icon'=>'chart-bar', 'icon2' => 'export-1']);
 
