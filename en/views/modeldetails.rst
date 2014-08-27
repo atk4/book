@@ -13,3 +13,5 @@ column containing lables and the right column containing values::
 This view is implemented on top of "Grid" therefore you can add more columns
 to it if you wish. The View will not allow user to modify model values.
 
+.. php:attr:: include_id_column
+
