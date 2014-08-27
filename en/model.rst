@@ -12,6 +12,16 @@ One Model instance
 
 .. figure:: /figures/orm-integration.jpg
 
+Quick Example::
+
+    $m=$this->add('Model_User')->ref('Orders');
+    $m->addCondition('is_shipped', false);
+    foreach($m as $order) {
+        echo "Shipping order ".$m;
+        $m->ship();   // calling custom method
+    }
+
+
 Model Capabilities
 ------------------
 
@@ -20,6 +30,13 @@ on Data Source. For example if your model is using ``setSource('Mongo')``,
 you will be able to use conditions, iteration and some other features
 supported by mongo. If you are using ``setSource('Memcache')``, features
 like listing and conditions will not be available.
+
+Model implementation in 4.3 and 4.2
+-----------------------------------
+
+Models were initially introduced in Agile Toolkit 3.9 and then they
+were greatly improved in the subsequent releases. Most of the time
+it has been done without major impact on the usage pattern and
 
 You must understand that there are two types of models - Relational and
 Non-Relational (or NoSQL) and that Model\_Table (relational) extends the

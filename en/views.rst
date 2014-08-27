@@ -87,6 +87,7 @@ Useful Views in Agile Toolkit
     views/simple
     views/lister
     views/completelister
+    views/modeldetails
     views/menu
     views/layout
     views/grid
