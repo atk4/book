@@ -95,7 +95,7 @@ Total Calculation
 -----------------
 
 .. php:attr:: totals
-.. php:attr:: total_row
+.. php:attr:: total_rows
 .. php:attr:: totals_t
 
 CompleteLister supports calculation of totals. To enable calculation:
@@ -106,12 +106,27 @@ While drawing the items, the totals will be automatically calculated. This
 calculation method will only be able to calculate totals for the rendered
 fields. If Lister is used in conjuction with Paginator, only totals from
 the current, visible page will be calculated.
+To address this problem you can use :php:method:`addGrandTotals`.
 
-To address this problem you can use addGrandTotals
+You can optionally pass array of fieldnames and then only totals of these
+fields will be calculated. If you pass `null`, then only total count of
+records will be calculated.
+
 
 .. php:method:: addGrandTotals
 
+Almost the same as :php:method:`addTotals`, but it calculates totals of all
+records not depending on Paginator or record visibility.
+Calculation is available only if you use :php:class:`SQL_Model` data source
+and is done by creating one more SQL request at the end of rows rendering.
+
 Total calculation plays a major part inside :php:class:`Grid`.
+
+
+.. php:method:: removeTotals
+
+Disable totals calculation
+
 
 Row rendering
 -------------
@@ -140,13 +155,7 @@ CompleteLister uses a more advanced render loop compared to :php:meth:`Lister::r
 
     }
 
-The enhancements include total calculation:
-
-.. php:method:: updateTotals
-
-.. php:method:: renderTotalsRow
-
-After the loop, render continues to output the totals or grand totals::
+After the loop, render continues to output the totals or grand totals:
 
     // calculate grand totals if needed
     if ($this->totals_type == 'onRequest') {
@@ -158,6 +167,15 @@ After the loop, render continues to output the totals or grand totals::
 
     // render totals row
     $this->renderTotalsRow();
+
+The enhancements include total calculation:
+
+.. php:method:: updateTotals
+
+.. php:method:: updateGrandTotals
+
+.. php:method:: renderTotalsRow
+
 
 
 
