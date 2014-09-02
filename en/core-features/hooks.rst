@@ -470,3 +470,33 @@ inside init(), then after cloning such an object, it will not have the
 handlers cloned along with the object. Use of newInstance() should work
 fine.
 
+Adding hook while inside a hook
+-------------------------------
+
+The below code is designed to test hook adding while inside a hook::
+
+    $this->addHook('test', function($t){
+        echo 'almost...';
+        $t->addHook('test', function(){ echo "YES\n"; });
+    });
+    $this->hook('test');
+    $this->hook('test');
+
+    Output:
+
+    // almost...YES
+    // almost...YES
+
+
+There is one condition you must follow when adding to the same hook from which
+your method is called. It must use the same priority.
+
+Hooks work by removing themselves from the hook array just as they execute,
+however the contens of a hook restored after Agile Toolkit iterates through
+all the hooks. This design patters ensures that:
+
+   1. Code which relies on adding a hook and then continuing execution from
+      within that hook can be nested (:ref:class:`VirtualPage` for example).
+   2. Multiple execution of the same hook will not end up with too many extra
+      hooks being added.
+
