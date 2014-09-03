@@ -60,6 +60,26 @@ Iteration Logic
     you can pass anything iterateable to setSource() as long as elements of
     iterating produce either a string or array.
 
+Examples::
+     $l=$this->add('Lister');
+     $l->setSource( array('a','b','c') );        // associative array
+
+    or   // array of hashes
+     $l->setSource( array(
+         array('id'=>1,'name'=>'John','surname'=>'Smith'),
+         array('id'=>2,'name'=>'Joe','surname'=>'Blogs')
+         ));
+
+    or   // dsql
+     $l->setSource( $this->api->db->dsql()
+         ->table('user')
+         ->where('age>',3)
+         ->field('*')
+     );
+
+    or   // sql table
+     $l->setSource( 'user', array('name','surname'));
+
 .. php:method:: getIterator
 
 .. php:attr:: current_row
@@ -76,7 +96,8 @@ The render() method of Lister will read next iteration of source / model inside
 .. php:method:: formatRow
 
     Called after iterating and may be redefined to change contents of
-    :php:attr:`Lister::current_row`.
+    :php:attr:`Lister::current_row`. Redefine this method to change rendering
+    logic
 
 Example::
 
@@ -95,6 +116,21 @@ callback method::
     });
 
 .. php:method:: render
+
+    Renders everything
+
+.. php:method:: rowRender
+
+    Renders single row
+    
+    If you use for formatting then interact with template->set() directly
+    prior to calling parent
+
+.. php:method:: formatRow
+
+     Called after iterating and may be redefined to change contents of
+     :php:attr:`Lister::current_row`. Redefine this method to change rendering
+     logic
 
 The resulting values in this hash after formatting will be populated into the
 template. The template is :php:meth:`GiTemplate::render`-ed and the resulting
