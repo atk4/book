@@ -10,11 +10,11 @@ Pathfinder - resource management
     the location containing the resource you ask for and will
     provide you with either a relative path, URL or absolute
     path to a file.
-
+    
     To make this possible, PathFinder relies on a class
     :php:class:`PathFinder_Location`, which describes each individual
     location and it's contents.
-
+    
     You may add additional locations in your application,
     add-on or elsewhere. Some locations may be activated only
     in certain circumstances, for example add-on will be able
@@ -74,13 +74,13 @@ types. You can easily extend by registering your own types of resources.
     Agile Toolkit-based application comes with a predefined resource
     structure. For new users it's easier if they use a consistest structure,
     for example having all the PHP classes inside "lib" folder.
-
+    
     A more advanced developer might be willing to add additional locations
     of resources to suit your own preferences. You might want to do
     this if you are integrating with your existing application or
     another framework or building multi-tiered project with extensive
     structure.
-
+    
     To extend the default structure which this method defines - you should
     look into :php:class:`App_CLI::addDefaultLocations` and
     :php:class:`App_CLI::addSharedLocations`
@@ -140,11 +140,45 @@ use :php:meth:`PathFinder_Location::setCDN` and
 Locating Resources
 ------------------
 
-.. php:method:: locate ($type, $filename, $return = 'relative')
+.. php:method:: locate
 
-    Search for a file inside multiple locations, associated with resource
+    Search for a $filename inside multiple locations, associated with resource
     $type. By default will return relative path, but 3rd argument can
-    change that
+    change that.
+    
+    The third argument can also be 'location', in which case a :php:class:`PathFinder_Location`
+    object will be returned.
+    
+    If file is not found anywhere, then :php:class:`Exception_PathFinder` is thrown
+    unless you set $throws_exception to ``false``, and then method would return null.
+
+.. php:method:: search
+
+    Search is similar to locate, but will return array of all matching
+    files.
+
+.. php:method:: searchDir
+
+    Specify type and directory and it will return array of all files
+    of a matching type inside that directory. This will work even
+    if specified directory exists inside multiple locations.
+
+Using searchDir is very handy if you want user to select an appropriate
+controller::
+
+    $form = $this->add('Form');
+
+    $form->addField('DropDown','use_menu_type')
+        ->setValueList($this->app->pathfinder->searchDir('php', 'Menu'));
+
+
+    // Will list classes like:
+    //   Menu_Basic
+    //   Menu_Vertical
+    //   Menu_Horizontal
+    //   etc
+
+
 
 AutoLoading classes
 -------------------
@@ -163,32 +197,6 @@ before Composer.
 This loader order helps you understand which file is missing and where
 it was requested.
 
-Default Locations
------------------
-
-Agile Toolkit defines three locations for you:
-
-::
-
-    $this->api->pathfinder->base_location
-
-    $this->api->pathfinder->public_location
-
-    $this->api->pathfinder->atk_location
-
-You can either add more locations or define more contents of the
-existing locations. For example, let's add additional CSS folder:
-
-::
-
-    $this->api->pathfinder->base_location->defineContents(array(
-        'css'=>'public/css/'.$skin;
-    ));
-
-Next time the CSS file would be located in the following folders and in
-the following order: ``public/css``, ``public/css/myskin``,
-``public/atk4/css``. The physical file is located first, then the first
-matching location will be used to generate URL or Path.
 
 Relative Locations
 ------------------
