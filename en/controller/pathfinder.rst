@@ -103,50 +103,48 @@ path OR a URL to the location. PathFinder relies on
 - :php:attr:`Controller_PageManager::base_url`
 - :php:attr:`Controller_PageManager::base_path`
 
-Location is defined as a separate object of class :php:class:`PathFinder_Location`,
-however you don't need to work with this class directly.
+Location is defined as a separate object of class :php:class:`PathFinder_Location`.
+To add a new location you must call addLocation or
+:php:meth:`PathFinder_Location::addRelativeLocation`:
 
-The easiest way to add a new location is by calling addRelativeLocation:
+.. php:method:: addLocation
 
-.. php:method:: addRelativeLocation
+    Cretes new PathFinder_Location object and specifies it's contents.
+    You can subsequentially add more contents by calling:
+    :php:meth:`PathFinder_Location::defineContents`
 
-    ok
+Example::
+
+    $my_location = $this->app->addLocation([
+        'php' => 'my-lib',
+        'template' = 'my-template'
+    ]);
 
 
-PathFinder relies on the concept of "Locations". Each location defines
-it's own contents through an array. For example:
-
-::
-
-    $this->atk_location=$this->addLocation(array(
-        'php'=>'lib',
-        'template'=>'templates',
-        'public'=>'public/atk4',
-        'js'=>'public/atk4/js',
-        'css'=>'public/atk4/css',
-    ));
-
-This describes resources which come with Agile Toolkit.
-
-Often addons would bundle more resources and will register additional
-locations. For example a standalone CMS product developed on Agile
-Toolkit, can use ``cms_plugin`` location for locating it's own plugins.
-
-Paths and URLs
---------------
+Paths, URLs and CDN
+-------------------
 
 PathFinder operates with and distinguishes a physical locations versus
 URLs. For example even through a physical file is located in
 ``vendor/atk4/atk4/public/atk4/js/file.js`` the relative URL would be
 ``public/atk4/js/file.js``. In some cases the URL would be absolute, for
 example if you store your files on CDN:
-``https://secure.agiletoolkit.org/js/file.js``.
+``https://cdn.agiletoolkit.org/js/file.js``.
 
-You can use methods ``setBasePath`` and ``setBaseURL`` for
-PathFinder\_Location to specify both.
 
-When locating files, there are also two methods: ``locateURL`` and
-``locatePath``.
+You can asociate your location with Path and URL using
+:php:meth:`PathFinder_Location::setBaseURL` and
+:php:meth:`PathFinder_Location::setBasePath`. Alternatively you can
+use :php:meth:`PathFinder_Location::setCDN` and
+
+Locating Resources
+------------------
+
+.. php:method:: locate ($type, $filename, $return = 'relative')
+
+    Search for a file inside multiple locations, associated with resource
+    $type. By default will return relative path, but 3rd argument can
+    change that
 
 AutoLoading classes
 -------------------
