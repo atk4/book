@@ -14,17 +14,17 @@ PathFinder
     the location containing the resource you ask for and will
     provide you with either a relative path, URL or absolute
     path to a file.
-    
+
     To make this possible, PathFinder relies on a class
     :php:class:`PathFinder_Location`, which describes each individual
     location and it's contents.
-    
+
     You may add additional locations in your application,
     add-on or elsewhere. Some locations may be activated only
     in certain circumstances, for example add-on will be able
     to add it's location if add-on was added to a page.
 
-Pathfinder is accessible inside your application through ``$this->api->pathfinder`` however some
+Pathfinder is accessible inside your application through ``$this->app->pathfinder`` however some
 methods are duplicated in the API class for easier access:
 
 - :php:meth:`App_CLI::locate` - simply calls :php:meth:`PathFinder::locate`
@@ -34,7 +34,7 @@ methods are duplicated in the API class for easier access:
 
 Here is an example how you can locate path of a certain mail template::
 
-    $mail_template = $this->api->locate('mail','welcome.mail');
+    $mail_template = $this->app->locate('mail','welcome.mail');
     // returns templates/mail/welcome.mail - relative path to your project root
 
 Default Folder Structure for Agile Toolkit project
@@ -78,13 +78,13 @@ types. You can easily extend by registering your own types of resources.
     Agile Toolkit-based application comes with a predefined resource
     structure. For new users it's easier if they use a consistest structure,
     for example having all the PHP classes inside "lib" folder.
-    
+
     A more advanced developer might be willing to add additional locations
     of resources to suit your own preferences. You might want to do
     this if you are integrating with your existing application or
     another framework or building multi-tiered project with extensive
     structure.
-    
+
     To extend the default structure which this method defines - you should
     look into :php:class:`App_CLI::addDefaultLocations` and
     :php:class:`App_CLI::addSharedLocations`
@@ -149,10 +149,10 @@ Locating Resources
     Search for a $filename inside multiple locations, associated with resource
     $type. By default will return relative path, but 3rd argument can
     change that.
-    
+
     The third argument can also be 'location', in which case a :php:class:`PathFinder_Location`
     object will be returned.
-    
+
     If file is not found anywhere, then :php:class:`Exception_PathFinder` is thrown
     unless you set $throws_exception to ``false``, and then method would return null.
 
@@ -232,9 +232,9 @@ contains references to some useful locations.
 
     There are also some public files in ATK folder. Normally
     this folder would be symlinked like this:
-    
+
     public/atk4  -> /vendor/atk4/atk4/public/atk4
-    
+
     If that folder is not there, PathFinder will point directly
     to vendor folder (such as if on development environment),
     if that is also unavailable, this can fall back to Agile Toolkit CDN.
@@ -261,7 +261,7 @@ find that on some projects you want to create ``shared`` folder which
 contains the resources you share between different applications within
 your project. Here is how you can do it::
 
-    $this->api->pathfinder->base_location->addRelativeLocation(
+    $this->app->pathfinder->base_location->addRelativeLocation(
         'shared', array(
             'php'=>'lib',
             'template'=>'templates',
@@ -272,7 +272,7 @@ If you are building an "admin" system located under a sub-folder but you
 still want to access some of the classes from your frontend, you can use
 the following inside your admin::
 
-    $this->api->pathfinder->base_location->addRelativeLocation(
+    $this->app->pathfinder->base_location->addRelativeLocation(
         '..', array(
             'php'=>'lib',
             'mail'=>'templates/mail',
@@ -282,15 +282,15 @@ the following inside your admin::
 Bundling locations inside add-ons
 ---------------------------------
 
-Finally if you are building an add-on, you can add locations from within
-the add-on:
+If you are building an add-on, you can add locations from within
+the add-ons initializer (See :php:class:`Controller_Addon`)::
 
-::
-
-    $this->api->addAddonLocation(__NAMESPACE__, array(
+    $this->app->addAddonLocation(__NAMESPACE__, array(
         'cms_plugins'=>'cms_plugins',
         'css'=>'public/css'
     ));
+
+For more information, please see add-on documentation.
 
 There are two aspects of add-on installation you might need at this
 point (for more info read about automated add-on installation)
@@ -303,13 +303,47 @@ point (for more info read about automated add-on installation)
    automatically replace ``public/css`` with
    ``public/__NAMESPACE__/css`` for you if necessary.
 
-Isolated installations
-----------------------
 
-Historically Agile Toolkit have been operating in two modes - in first
-you install EVERYTHING into web-root. In other set-up you point your
-web-root inside ``public`` folder.
+CDN Usage
+=========
+Agile Toolkit allows you to define locations which are located
+on a CDN. Unfortunatelly such a location will not be able to
+verify and see if file is physicaly present before including URL,
+so CDN will assume that all files are always present in there.
 
-From 4.3 your setup will automatically be detected and locations will
-configure themselves appropriately, however the secure install with
-``public`` folder isolated is default option now for new installation.
+CDN usage example::
+
+    $this->addLocation([
+        'public' => '.'
+    ])->setCDN('http://cdn.myproject.com/public/');
+
+Depending on the precedence of defined location, this could divert
+links to all static resources to the URL you have specified here.
+
+Possible Structure Configuration
+================================
+
+Historically Agile Toolkit have been operating from inside web-root.
+The root of Agile Toolkit project would need to be installed inside
+your web-root. As a result, the classes of your project were technically
+inside web-root and a bad configuration of a web server could expose
+some of your templates or classes introducing mild security threat.
+
+Starting in 4.3 Agile Toolkit have adopted a new structure. Your web-root
+must point inside "public" folder of your project which will contain
+only one PHP file: ``index.php``. This file will change a working directory
+to parent (cd ..) and then proceed to work normally.
+
+Agile Toolkit 4.3 has also introduced separation of public and private
+repositories.
+
+Dispite the new default structure, PathFinder is still compatible with
+the old structure too. For compatibiltiy it relies on folder names.
+
+Another consequence is that Agile Toolkit itself, previously available
+inside atk4 of your web-root is no longer available. The ZIP file you
+download does not have symlinks for compatibilit with Windows, so
+folder ``public/atk4`` would be a copy of ``vendor/atk4/atk4/public/atk4``.
+If you prefer a symlink, you can replace a copy with a symlink.
+
+
