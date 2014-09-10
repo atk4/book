@@ -285,6 +285,29 @@ pathfinder object:
 .. php:method:: locatePath
 .. php:method:: addLocation
 
+.. php:method:: addAllLocations
+
+    If this method is defined, :php:class:`PathFinder` will use only it instead
+    of creating default location structure through :php:meth:`PathFinder::addDefaultLocations`.
+
+    Try to avoid using this method.
+
+.. php:method:: addDefaultLocations
+
+    Will be called before :php:class:`PathFinder` start adding default locations.
+    Anything you add will have higher precedence.
+
+.. php:method:: addSharedLocations
+
+    Will be called after local folders are initialized, but before any shared
+    locations (or libraries) are added.
+
+    See :php:class:`PathFinder` for a complete list of location initialization
+    order.
+
+If any additional resources needs to be added with lower precedence, you can use
+the ``init()`` method.
+
 
 URL building
 ============

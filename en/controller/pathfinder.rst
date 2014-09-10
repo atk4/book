@@ -1,23 +1,39 @@
 Pathfinder - resource management
 ================================
 
-Pathfinder is a system-wide controller for locating different types of
-your application resources: classes, images, css files, etc.
+.. php:class:: PathFinder
 
-Pathfinder is accessible through ``$this->api->pathfinder`` however some
-methods are duplicated in the API class for easier access. Here is a
-sample use:
+    PathFinder is responsible for locating resources in Agile
+    Toolkit. One of the most significant principles it implements
+    is ability for any resource (PHP, JS, HTML, IMG) to be
+    located under several locations. Pathfinder will look for
+    the location containing the resource you ask for and will
+    provide you with either a relative path, URL or absolute
+    path to a file.
 
-::
+    To make this possible, PathFinder relies on a class
+    :php:class:`PathFinder_Location`, which describes each individual
+    location and it's contents.
+
+    You may add additional locations in your application,
+    add-on or elsewhere. Some locations may be activated only
+    in certain circumstances, for example add-on will be able
+    to add it's location if add-on was added to a page.
+
+Pathfinder is accessible inside your application through ``$this->api->pathfinder`` however some
+methods are duplicated in the API class for easier access:
+
+- :php:meth:`App_CLI::locate` - simply calls :php:meth:`PathFinder::locate`
+- :php:meth:`App_CLI::locateURL` - calls :php:meth:`PathFinder::locate` with type='url'
+- :php:meth:`App_CLI::locatePath` - calls :php:meth:`PathFinder::locate` with type='path'
+- :php:meth:`App_CLI::addlocation` - calls :php:meth:`PathFinder::addLocation`
+
+Here is an example how you can locate path of a certain mail template::
 
     $mail_template = $this->api->locate('mail','welcome.mail');
-    // returns templates/mail/welcome.mail
+    // returns templates/mail/welcome.mail - relative path to your project root
 
-In Agile Toolkit different components and add-ons can contribute by
-registering additional locations within PathFinder helping your
-application locate the necessary resources without copying files.
-
-Purpose of PathFinder
+Default Folder Structure for Agile Toolkit project
 ---------------------
 
 No doubt you are familiar with "INCLUDE\_PATH" which have been used in
@@ -25,30 +41,77 @@ PHP for locating include files. Pathfinder applies similar approach to
 other type of resources. Below you will see the commonly used resource
 types. You can easily extend by registering your own types of resources.
 
-+----------+---------------------------+---------------------------------------------------------------------+
-| Type     | Default Location          | Description                                                         |
-+==========+===========================+=====================================================================+
-| php      | lib, atk4/lib             | Contains class files from the default namespace.                    |
-+----------+---------------------------+---------------------------------------------------------------------+
-| page     | page                      | Location for "page" files, which can be directly accessible through |
-|          |                           | standard routing (See routing)                                      |
-+----------+---------------------------+---------------------------------------------------------------------+
-| template | templates, atk4/templates | Contains SMLite template files with extension .html                 |
-+----------+---------------------------+---------------------------------------------------------------------+
-| public   | public                    | Contains publicly available resources, such as CSS, JS, etc files   |
-+----------+---------------------------+---------------------------------------------------------------------+
-| js       | public/js                 | JavaScript include files                                            |
-+----------+---------------------------+---------------------------------------------------------------------+
-| css      | public/css                | Stylesheets                                                         |
-+----------+---------------------------+---------------------------------------------------------------------+
-| mail     | public/mail               | TMail template location                                             |
-+----------+---------------------------+---------------------------------------------------------------------+
++----------+-------------------------+---------------------------------------------------------------------+
+| Type     | Default Location        | Description                                                         |
++==========+=========================+=====================================================================+
+| php      | lib                     | Contains class files from the default namespace. A file location is |
+|          | ../shared/lib           | determined based on PSR-1 rules, however classes in those folders   |
+|          | ../vendor/atk4/atk4/lib | would have no namespace.                                            |
++----------+-------------------------+---------------------------------------------------------------------+
+| page     | page                    | Location for "page" files, which can be directly accessible through |
+|          |                         | standard routing (See routing)                                      |
++----------+-------------------------+---------------------------------------------------------------------+
+| template | template                | Contains Template files with extension .html. Agile Toolkit         |
+|          | ../shared/tempalte      | templates actually originate from .jade files, but both the .jade   |
+|          | ../shared/lib           | and resulting .html will be found nearby.                           |
++----------+-------------------------+---------------------------------------------------------------------+
+| public   | public                  | Contains directly acessible resources such as images, fonts etc     |
++----------+-------------------------+---------------------------------------------------------------------+
+| js       | public/js               | JavaScript include files. Use {js}myjs.js{/}                        |
+|          | public/js/atk4/js       | or $this->js()->_load('myjs')                                       |
++----------+-------------------------+---------------------------------------------------------------------+
+| css      | public/css              | Stylesheets, use {css}mycss.css{/} inside tempaltes.                |
+|          | public/css/atk4/css     |                                                                     |
++----------+-------------------------+---------------------------------------------------------------------+
+| mail     | template/mail           | TMail template location                                             |
++----------+-------------------------+---------------------------------------------------------------------+
+| addons   | shared/addons           | Addons (namespaces), see description below                          |
+|          | vendor/me/myaddon/...   |                                                                     |
++----------+-------------------------+---------------------------------------------------------------------+
 
-Default locations will already be set by Agile Toolkit, however you can
-register more locations for existing types or even for new types.
+.. php:method:: addDefaultLocations
 
-Locations
----------
+    Agile Toolkit-based application comes with a predefined resource
+    structure. For new users it's easier if they use a consistest structure,
+    for example having all the PHP classes inside "lib" folder.
+
+    A more advanced developer might be willing to add additional locations
+    of resources to suit your own preferences. You might want to do
+    this if you are integrating with your existing application or
+    another framework or building multi-tiered project with extensive
+    structure.
+
+    To extend the default structure which this method defines - you should
+    look into :php:class:`App_CLI::addDefaultLocations` and
+    :php:class:`App_CLI::addSharedLocations`
+
+Add-ons would typically be added during init() so their added locations would have low
+precedence. In other words, if you would have a class, public file or js include
+with the same name as in add-on, Agile Toolkit will automatically use your. For
+this reason add-on authors are asked to use prefixes on their resources where possible.
+
+As each location must know both physical path and URL, for custom
+configuration you will need to define both - base path and base url.
+
+Adding Locations
+----------------
+
+Each location in Agile Toolkit must be able to come up with a physical
+path OR a URL to the location. PathFinder relies on
+:php:class:`Controller_PageManager` and it's properties:
+
+- :php:attr:`Controller_PageManager::base_url`
+- :php:attr:`Controller_PageManager::base_path`
+
+Location is defined as a separate object of class :php:class:`PathFinder_Location`,
+however you don't need to work with this class directly.
+
+The easiest way to add a new location is by calling addRelativeLocation:
+
+.. php:method:: addRelativeLocation
+
+    ok
+
 
 PathFinder relies on the concept of "Locations". Each location defines
 it's own contents through an array. For example:
