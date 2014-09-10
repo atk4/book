@@ -1,5 +1,9 @@
-Pathfinder - resource management
-================================
+**************************
+Asset and Class Management
+**************************
+
+PathFinder
+==========
 
 .. php:class:: PathFinder
 
@@ -34,7 +38,7 @@ Here is an example how you can locate path of a certain mail template::
     // returns templates/mail/welcome.mail - relative path to your project root
 
 Default Folder Structure for Agile Toolkit project
----------------------
+--------------------------------------------------
 
 No doubt you are familiar with "INCLUDE\_PATH" which have been used in
 PHP for locating include files. Pathfinder applies similar approach to
@@ -183,9 +187,14 @@ controller::
 AutoLoading classes
 -------------------
 
+.. php:method:: loadClass
+
+    Provided with a class name, this will attempt to
+    find and load it
+
 Agile Toolkit Pathfinder registers two loader functions. The first
 function will take precedence and will be used to locate include files
-before Composer.
+before Composer. Here is the typical call order:
 
 -  Agile Toolkit PathFinder autoloader: will take advantage of location
    definition to locate your class.
@@ -197,18 +206,60 @@ before Composer.
 This loader order helps you understand which file is missing and where
 it was requested.
 
+Properties
+----------
+
+PathFinder object instance is accessible through ``app->pathfinder`` and
+contains references to some useful locations.
+
+.. php:attr:: base_location
+
+    Base location is where your interface files are located. Normally
+    this location is added first and all the requests are checked here
+    before elsewhere. Example: /my/path/agiletoolkit/admin/
+
+.. php:attr:: public_location
+
+    This is location where images, javascript files and some other
+    public resources are located. Ex: /my/path/agiletoolkit/public
+
+.. php:attr:: atk_location
+
+    Agile Toolkit comes with some assets: lib, template. This
+    location describes those resources. It's not publicly available
+
+.. php:attr:: atk_public
+
+    There are also some public files in ATK folder. Normally
+    this folder would be symlinked like this:
+    
+    public/atk4  -> /vendor/atk4/atk4/public/atk4
+    
+    If that folder is not there, PathFinder will point directly
+    to vendor folder (such as if on development environment),
+    if that is also unavailable, this can fall back to Agile Toolkit CDN.
+
+PathFinder Location
+===================
+
+.. php:class:: PathFinder_Location
+
+    Represents a location, which contains number of sub-locations. Each
+    of which may contain certain type of data
 
 Relative Locations
 ------------------
+
+.. php:method:: addRelativeLocation
+
+    Adds a new location object which is relative to $this location.
 
 If you place a certain location inside another location, you can use
 method ``addRelativeLocation``. This will re-use the URL and Path of the
 parent location and apply it to your new location. For example you will
 find that on some projects you want to create ``shared`` folder which
 contains the resources you share between different applications within
-your project. Here is how you can do it:
-
-::
+your project. Here is how you can do it::
 
     $this->api->pathfinder->base_location->addRelativeLocation(
         'shared', array(
@@ -219,9 +270,7 @@ your project. Here is how you can do it:
 
 If you are building an "admin" system located under a sub-folder but you
 still want to access some of the classes from your frontend, you can use
-the following inside your admin:
-
-::
+the following inside your admin::
 
     $this->api->pathfinder->base_location->addRelativeLocation(
         '..', array(
