@@ -205,6 +205,83 @@ You can also use model as Array, instead of set / get use square brackets::
 
 The Dataset
 -----------
+In a traditional database design, the underlying database engine would
+group all the data into tables even if the data belongs to different
+users. For example, your system might contain list of Users and each User
+could have multiple Orders. User must only be able to see orders
+by that user and not other orders. Similarly he should be able to modify
+only records which are available to him.
+
+A classical problem which often occurs in software design is when you
+show user his own orders in a list on a page using this SQL query::
+
+    select * from `order` where user_id = ?
+
+Each order would contain "cancel" button pointing to the delete page and
+passing ``id`` parameter. The delete page would contain the following
+query::
+
+    delete from `order` where id = ?
+
+The problem here is that if User A known ID of order owned by another
+user, he can easily cancel that order.
+
+Agile Toolkit ORM framework allows you to entirely avoid this problem
+by changing the way how you think while develop your application. In
+Agile Toolkit you do not operate with "table order" instead of operate
+with model::
+
+    $orders -> load($_GET['id'])->delete();
+
+What's important here is that $order is a model with a limited data-set.
+
+Data Set is a collections of records which model is allowed to load, update
+or delete. When developing an app, you must operate with the objects
+which already limit the data-set. Here is one example how to do this::
+
+
+    class Model_MyOrder extends Model_Order {
+        function init(){
+            parent::init();
+
+            $this->addCondition('user_id', $this->app->auth->model->id);
+        }
+    }
+
+
+    // And then
+    $orders = $this->add('Model_MyOrders');
+
+The same model object must be used for both displaying the list and executing
+delete operations to make sure all the conditions applied properly.
+
+There is however a better way to deal with conditions, which is explained
+in the next section.
+
+Relation Traversal
+------------------
+When you define model, you can specify how they relate to other models.
+There are 2 types of basic relations: ``hasOne`` and ``hasMany``::
+
+    $user->hasMany('Order');
+
+    $order->hasOne('User');
+
+
+Note that Agile Toolkit will automatically add Model_ in front of Order / User
+parameter.
+
+hasOne adds a new field in the current model corresponding of 2 parts: $table of
+related model and "_id". You can access the ID field at $order->get('user_id');
+
+hasMany does not create any extra fields in your model.
+
+You can traverse thereference by using method ref()
+
+.. php:method:: ref
+
+    bleh
+
 
 
 .. todo:: write about lazy write (dirtiness)
