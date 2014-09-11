@@ -75,6 +75,12 @@ any other object in agile toolkit::
 
     $person = $this->add('Model_Person');
 
+Note that you also need to properly set the $table property on your model.
+
+.. php:attr:: table
+
+    Contains name of table, session key, collection or file, depending on
+    data controller you are using.
 
 Core Concepts
 =============
@@ -91,16 +97,108 @@ principle of havign a separate objects for each record. Agile Toolkit uses a
 different principle of record loading.
 
 A single Model Object may have record "loaded" inside itself at any given time.
+The record data can then be "unloaded" and the same object can be re-used
+for another record.
+
+.. php:method:: tryLoad
+
+    Ask the controller data to load the model by a given $id
 
 .. php:method:: load
 
-    bleh
+    Like tryLoad method but if the record not found, an exception is thrown
 
 .. php:method:: unload
 
-    bleh
+    Forget loaded data
+
+.. php:method:: loaded
+
+    Returns true if the model is loaded
+
+Here are a few examples of loading and unloading data::
+
+    $person = $this->add('Model_Person');
+
+    echo $person->loaded();  // false, not loaded
 
 
+    $person->load(1);
+    echo $person->loaded();  // true now
+
+    $person->load(2);     // no need to unload
+    echo $person->loaded();  // still true
+
+    $person->unload();
+    echo $person->loaded();  // false now
+
+
+    $person->tryLoad(12313123); // no such record
+    echo $person->loaded();  // still false
+
+
+    $person->load(12313123); // generates exception
+
+You will see a common pattern in Agile Toolkit pages, where
+models are loaded with the data passed through the GET parameters::
+
+    $this->person  = $this->add('Model_Person')->load($_GET['id']);
+
+If the specified ID passed here is not found in the database, then
+exceptionis generated and API handles that.
+
+Generical models
+----------------
+While a general rule says that all your business models needs to be defined
+as classes extending from Model or Model_SQL, you can , however, have a
+generic model defined like this::
+
+    $m = $this->add('Model', ['table'=>'person']);
+    $m->addField('name');
+    $m->setSource('Array', ['John', 'Peter', 'Joe']);
+
+The short notation demonstrated here is good if you are simply willing to
+test model functionality and do not require comprehensive model definition.
+
+
+Accessing and Changing field values
+-----------------------------------
+Model contains the information loaded from the Data Source and
+there are several ways to access it.
+
+.. php:method:: get($name = null)
+
+    Get the value of a model field. If field $name is not specified, then
+    returns associative hash containing all field data
+
+.. php:method:: set($name, [$value])
+
+    Set value of fields. If only a single argument is specified
+    and it is a hash, will use keys as property names and set values
+    accordingly.
+
+To complement the example below, I'll also use :php:meth:`Field::defaultValue`
+inside field definition. In this example, I'm using generic class for the model,
+instead of extending it and creating a separate model::
+
+
+    $m = $this->add('Model', ['table'=>'person']);
+    $m->addField('name');
+    $m->addField('age')->type('int')->defaultValue(18);
+    $m->setSource('Array', ['John', 'Peter', 'Joe']);
+
+    $m->load(1);
+    echo $m->get('name');
+    $m->set('age', 25);
+
+    var_dump($m->get());   // outputs [ id=1, name=Peter, age=25 ]
+
+You can also use model as Array, instead of set / get use square brackets::
+
+    $m['age'] = 25;
+    echo $m['name'];
+
+.. note:: You can't use ``$m['age']++`` due to some PHP limitation.
 
 
 .. _model dataset:
@@ -109,7 +207,7 @@ The Dataset
 -----------
 
 
-
+.. todo:: write about lazy write (dirtiness)
 
 
 Model Data
