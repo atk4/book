@@ -280,36 +280,73 @@ You can traverse thereference by using method ref()
 
 .. php:method:: ref
 
-    bleh
+    Traverses reference of relation
+
+The following example is an alternative approach to the problem described in
+the last chapter:
+
+- User hasMany Order
+- User can only access their orders
+- User can cancel only his own orders
+
+To upgrade the logic, you'll need to add this line to definition of user model::
+
+    $this->hasMany('Order');
+
+Then you will be able to access all orders of the user without any extra
+classes or conditions::
+
+    $user = $this->app->auth->model;
+    $order = $user->ref('Order');
+
+    $order->load($_GET['id'])->delete();
+
+When traversing into hasMany the model must be loaded and the current id value
+will automatically be applied as a condition on Order model dataset.
 
 
+.. todo:: deep taversal
+
+Data Source
+-----------
+
+.. php:method:: setSource
+
+    Associate model with a specified data source. The controller could be
+    either a string (postfix for Controller_Data_..) or a class. One data
+    controller may be used with multiple models.
+    If the $table argument is not specified then :php:attr:`Model::table`
+    will be used to find out name of the table / collection
+
+Each model may have a source set. The source is set like this::
+
+    $model->setSource('Session');
+
+    or
+
+    $model->setSource('Array', $arr);
+
+    or
+
+    $model->setSource('MongoDB', 'mycollection');
+
+The first argument here is a name of ":php:class:`Controller_Data`" - a special class
+which will control loading and saving of data.
+
+.. note:: If you are extending from Model_SQL you do not need to specify
+    a data source - it will work with your current database connection. In the
+    future versions of Agile Toolkit Modal_SQL will transition in favor of
+    setSource('SQL').
+
+The second argument is optional and if it's specified it will override
+:php:attr:`Model::table` of the model. The type of this argument
+can vary from driver to driver.
 
 .. todo:: write about lazy write (dirtiness)
 
 
-Model Data
-==========
-
-PHP objects are an ideal container for both the data and the set of
-methods which can be applied on the data. Agile Toolkit Models enhance
-basic objects with some other handy methods. Model hides the Data Controller
-from you and lets you simply interact with data without need to know where and
-how data is stored.
-
-.. figure:: /figures/model.png
-
-- Each record have unique ID which can be number or string.
-- Each record may have value of a String or a Hash
-- Model object may have one record ``loaded``
-- Model may have several ``conditions``.
-- Only records matching conditions may be loaded
-- All records which can possibly be loaded are called ``dataset``
-
-Despite model being associated with "table" or "collection" it's dataset
-may match a sub-set of available data in table due to conditions.
-
-
-Dataset is determined by 3 things: 1) Driver 2) Table 3) Conditions.
+Below are table comparing different drivers and showing how the meaning of table
+and condition change.
 
 +-------------------------+-------------------+--------------------------------------------------+
 | Driver                  | Table             | Condition                                        |
@@ -323,17 +360,6 @@ Dataset is determined by 3 things: 1) Driver 2) Table 3) Conditions.
 | Redis + Object Type     | Object name       | Prefix                                           |
 +-------------------------+-------------------+--------------------------------------------------+
 
-Here are some examples:
-
-+-------------------------+-----------------------------+---------------------+------------------------------+
-| Use Case                | Driver                      | Table               | Condition                    |
-+=========================+=============================+=====================+==============================+
-| Model\_Admin            | MySQL                       | user                | is\_admin=1, is\_deleted=0   |
-+-------------------------+-----------------------------+---------------------+------------------------------+
-| Model\_ShoppingBasket   | Controller\_Data\_Session   | basket              |                              |
-+-------------------------+-----------------------------+---------------------+------------------------------+
-| Model\_BasketItems      | MySQL                       | item, join basket   | basket.user\_id=123          |
-+-------------------------+-----------------------------+---------------------+------------------------------+
 
 Relational Model
 ----------------
@@ -345,37 +371,57 @@ flexibility in data querying they utilize a standardized query language
 (joining, sub-selects, expressions) and has a significantly enhanced
 model class to work directly with the database through DSQL.
 
-You can find a detailed description of relational models further in this
-book. Even through the relational models are significantly enhanced,
-they still retain the functionality of regular models, so everything
-described in this chapter would also apply to relational models.
+To take advantage of those features you must use :php:class:`Model_SQL`.
+This class extends Model but adds features of a typical ANSI SQL directly
+into model. Refer to the documentation of :php:class:`Model_SQL`
 
-setSource - Primary Source
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can still use generic Model with SQL driver, such as SQLite, but
+both use slightly different implementations. As of version 4.3 I recommend
+using Model_SQL as it is much more tested and optimized.
 
-A non-relational models can use ``setSource()`` method to associate
-themselves with a driver. Driver is an object of class extending
-Controller\_Data. Model will route some of the operations to the
-controller, such as loading, saving and deleting records.
-
-Model can only have one source and because relational models already
-using SQL you cannot specify a different source.
-
-addCache - Caches
-~~~~~~~~~~~~~~~~~
+Using Caching
+-------------
 
 A single model can have several caches associated with it. For example a
 relational model may have Session cache.
 
-When loading model with associated cache - the first attempt is made to
+When loading model by id with associated cache - the first attempt is made to
 load the model from the cache directly. If model is not found in
 cache(s), the primary source is used as a fall-back.
 
 When saving model data, it will be also saved into all the associated
 caches.
 
-The data controllers typically can be used as either primary source or
+The same data controller class can be used as either primary source or
 as a cache.
+
+How to write Model Code
+-----------------------
+Model is an essential part of your application containing business logic.
+You must refrain from using any of the following from inside your model:
+
+- GET and POST arguments, which are exclusive to app running in Web environment
+- UI objects or pages, which may not be there in CLI application.
+- Always document and think about use cases when model data is loaded / unloaded.
+- Think about transactions and commits.
+
+There is a special rule for relying on authenitcation data. In this documentation
+I have given example for MyOrders model, which display orders of the currently
+logged-in user. This is a valid usage pattern, but you must use it in a separate
+class.
+
+Another example is if your application have a system-wide filter. You might want
+to create Model_FilteredOrder which would automatically apply conditions from
+the global filter, but you should not do that inside the base model.
+
+With those basic requirements in mind, you can now create methods inside
+your model class to wrap up some business logic.
+
+
+
+
+There
+
 
 Model data and methods
 ~~~~~~~~~~~~~~~~~~~~~~
