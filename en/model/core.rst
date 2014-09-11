@@ -1,15 +1,18 @@
-**********
-Model Core
-**********
+************
+Model Basics
+************
 
 .. php:class:: Model
 
-    Implementation of Model paradigm in Agile Toolkit
+    Model class improves how you interact with the structured data. Extend
+    this class (or :php:class:`Model_SQL`) to define the structure of your
+    own models, then use object instances to interact with individual records.
 
 Introduction
 ============
 
-In your software you will be dealing with structured data:
+In Software Computing most of the time you deal with structured data, like
+this table below:
 
 +----+--------+---------+--------+
 | id | name   | surname | gender |
@@ -21,122 +24,92 @@ In your software you will be dealing with structured data:
 | 3  | Alfred | Hitch   | m      |
 +----+--------+---------+--------+
 
-This data is stored in a special dedicated location we call Data Source.
-As you see - data structure is consistent throughout the set (table) and
-can be broken into 4 fields. One of those fields is a unique identifier (id)
+The actual data of this table can be stored inside SQL or noSQL engine,
+but some of the common characteristics persist:
 
-If your data has the above properties, then you can take advantage of a
-Model class to access the data.
+- Data is presented inside several records
+- Records have same or similar structure
+- Each record has unique identifier (id)
+- Each column has type
 
-Models offer syntactic sugar and use unification for various data sources.
-With a unified interface various UI objects can safely access and modify data.
+Different data engines would introduce a different ways to interract, for example
+if you wish change Betty's surname to "Hitch", you would do it differently::
 
-Example Usage
--------------
+    SQL: update person set surname='Hitch' where id=1;
 
-The following example demonstrates simple data manipulation, to give you
-better feeling of what model is::
+    MongoDB: ....
 
-    $person->load(2);
-    echo $person['name'];    // outputs 'Betty'
+Concept of models proposes a common format for any data source, which looks
+like this::
 
-    $person['surname']='Smith';
-    $person->save();         // Updates surname to 'Smith'
-
-Features
---------
-
-In Agile Toolkit model class have the following features:
-
-- Defining column structure and types
-- Creating one model by extending another
-- Loading one row at a time, manipulating and saving it
-- Defining custom methods dealing with data
-- Iterating through available records (:ref:`model dataset`)
-- Callbacks (e.g. afterLoad or beforeSave)
-- Reference traversal
-
-Additionally with the help of Data Source capabilities more features
-can be available:
-
-- Adding conditions (filters) on models
-- Executing actions on all of the Data Set (update all) without iterating
-- Defining skip / count (limit) for records
-- Storing complex values in model
-
-A relational database managers (RDBMS) or SQL Servers are capable of
-more features and Agile Toolkit provides ways to take advantage of those
-features without manually writing queries:
-
-- Joining tables
-- Using expressions
-- Using sub-selects based on model
-- Applying action with existing conditions
-- Operating with "actual" field subset
-
-Agile Toolkit standard Data Controllers try to provide you with access to
-the features of underlying Data Source, however they will not emulate
-features lacking in the Database.
-
-- One primary Data Source per model
-- Several secondary Data Sources (caches) per model
-- Knowledge of Data Source capabilities
-
-Class Structure
----------------
-
-I have already introduced the main class - :php:class:`Model`, which can
-operate with any Data Source::
-
-    $m = $this->add('Model', [ 'table' => 'user' ]);
-    $m->setSource('SQL');
-    $m->addField('name');
-    $m->addField('surname');
-
-However this Model implementation may not support all the features of the
-Data Source. A more advanced Data Sources will have a dedicated model class
-you can use::
+    $person->load(1)->set('surname','Hitch')->save();
 
 
-    $m = $this->add('SQL_Model', [ 'table' => 'user' ]);
-    $m->addField('name');
-    $m->addField('surname');
-    $j = $m->join('contact_info','user_id');
-    $j->addField('address');
-    $m->addCondition('gender', 'm');
-    $m->addExpression('full_name')->set('concat(name, " ", surname)');
+Defining the Model
+==================
+Similarly to how you need to create a database structure before you store data
+in SQL, you would also need to define a model in Agile Toolkit before you can
+use it.
 
-Limitations and Recommendations
--------------------------------
+.. note:: While there are automated ways to convert model into SQL and back, I
+    recommend you to initially do this manually. Later in this documentation
+    I'll give my reasons as to why.
 
-In order to make working with model more predictable, you must remember
-that you must follow these rules:
+Model in Agile Toolkit is object of a "Model" class. To create your own model
+you need to create your own class by extending Model::
 
-- Each record must have an ``id`` (numeric or alphanumeric)
-- Each ID must correspond to hash of values (by fields), where key is (alphanumeric)
-- Model should have field defined (and field types/properties)
-- One field is a Title Field (normally "name")
-- Model can only access items within data-set (matching conditions)
-- Model can only create items which will match match data-set conditions
+    class Model_Person extends Model {
+        public $table='person';
+        function init() {
+            parent::init();
+
+            $this->addField('name');
+            $this->addField('email');
+
+            $this->setSource('MongoDB');
+        }
+    }
+
+After you do that, you can add 'Model_Person' as you normally do it with
+any other object in agile toolkit::
+
+    $person = $this->add('Model_Person');
 
 
-Creating Data Controllers
--------------------------
+Core Concepts
+=============
 
-Data Controllers implement :php:meth:`Model::load` / :php:meth:`Model::save`
-method and some other extensions to the model. If you would like to learn
-more about Data Controllers, see :php:class:`Controller_Data`. The rest
-of this chapter will focus on defining and using models with existing
-controllers.
+Before I continue explaining all the other features and capabilities of the
+model in Agile Toolkit, you would need to understand some of the core concepts
+and terminology used by the framework:
 
-If you are interested in specific data source features, see:
 
-- :php:class:`Controller_Data_Array` - static array access for models
-- :php:class:`Controller_Data_Session` - storing data in Session
-- :php:class:`Controller_Data_Mongo` - Accessing MongoDB collections
-- :php:class:`Controller_Data_SQL` - PDO-based SQL access. See :php:class:`SQL_Model`
-- :php:class:`Controller_Data_Memcache` - Memory Cache
-- :php:class:`Controller_Data_RESTful` - Accessing remote API through Model
+Record Loading
+--------------
+If you have seen ORM in other frameworks, you might be familiar with the
+principle of havign a separate objects for each record. Agile Toolkit uses a
+different principle of record loading.
+
+A single Model Object may have record "loaded" inside itself at any given time.
+
+.. php:method:: load
+
+    bleh
+
+.. php:method:: unload
+
+    bleh
+
+
+
+
+.. _model dataset:
+
+The Dataset
+-----------
+
+
+
 
 
 Model Data
@@ -160,10 +133,6 @@ how data is stored.
 Despite model being associated with "table" or "collection" it's dataset
 may match a sub-set of available data in table due to conditions.
 
-.. _model dataset:
-
-The Dataset
------------
 
 Dataset is determined by 3 things: 1) Driver 2) Table 3) Conditions.
 
@@ -361,4 +330,123 @@ Deleting model data
 You can delete a single record of data by calling delete() method or you can
 remove all data by calling deleteAll(). If you do not pass id to delete()
 method, then loaded record will be deleted.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Features
+--------
+
+In Agile Toolkit model class have the following features:
+
+- Defining column structure and types
+- Creating one model by extending another
+- Loading one row at a time, manipulating and saving it
+- Defining custom methods dealing with data
+- Iterating through available records (:ref:`model dataset`)
+- Callbacks (e.g. afterLoad or beforeSave)
+- Reference traversal
+
+Additionally with the help of Data Source capabilities more features
+can be available:
+
+- Adding conditions (filters) on models
+- Executing actions on all of the Data Set (update all) without iterating
+- Defining skip / count (limit) for records
+- Storing complex values in model
+
+A relational database managers (RDBMS) or SQL Servers are capable of
+more features and Agile Toolkit provides ways to take advantage of those
+features without manually writing queries:
+
+- Joining tables
+- Using expressions
+- Using sub-selects based on model
+- Applying action with existing conditions
+- Operating with "actual" field subset
+
+Agile Toolkit standard Data Controllers try to provide you with access to
+the features of underlying Data Source, however they will not emulate
+features lacking in the Database.
+
+- One primary Data Source per model
+- Several secondary Data Sources (caches) per model
+- Knowledge of Data Source capabilities
+
+Class Structure
+---------------
+
+I have already introduced the main class - :php:class:`Model`, which can
+operate with any Data Source::
+
+    $m = $this->add('Model', [ 'table' => 'user' ]);
+    $m->setSource('SQL');
+    $m->addField('name');
+    $m->addField('surname');
+
+However this Model implementation may not support all the features of the
+Data Source. A more advanced Data Sources will have a dedicated model class
+you can use::
+
+
+    $m = $this->add('SQL_Model', [ 'table' => 'user' ]);
+    $m->addField('name');
+    $m->addField('surname');
+    $j = $m->join('contact_info','user_id');
+    $j->addField('address');
+    $m->addCondition('gender', 'm');
+    $m->addExpression('full_name')->set('concat(name, " ", surname)');
+
+Limitations and Recommendations
+-------------------------------
+
+In order to make working with model more predictable, you must remember
+that you must follow these rules:
+
+- Each record must have an ``id`` (numeric or alphanumeric)
+- Each ID must correspond to hash of values (by fields), where key is (alphanumeric)
+- Model should have field defined (and field types/properties)
+- One field is a Title Field (normally "name")
+- Model can only access items within data-set (matching conditions)
+- Model can only create items which will match match data-set conditions
+
+
+Creating Data Controllers
+-------------------------
+
+Data Controllers implement :php:meth:`Model::load` / :php:meth:`Model::save`
+method and some other extensions to the model. If you would like to learn
+more about Data Controllers, see :php:class:`Controller_Data`. The rest
+of this chapter will focus on defining and using models with existing
+controllers.
+
+If you are interested in specific data source features, see:
+
+- :php:class:`Controller_Data_Array` - static array access for models
+- :php:class:`Controller_Data_Session` - storing data in Session
+- :php:class:`Controller_Data_Mongo` - Accessing MongoDB collections
+- :php:class:`Controller_Data_SQL` - PDO-based SQL access. See :php:class:`SQL_Model`
+- :php:class:`Controller_Data_Memcache` - Memory Cache
+- :php:class:`Controller_Data_RESTful` - Accessing remote API through Model
 
