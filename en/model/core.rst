@@ -5,7 +5,7 @@ Model Basics
 .. php:class:: Model
 
     Model class improves how you interact with the structured data. Extend
-    this class (or :php:class:`Model_SQL`) to define the structure of your
+    this class (or :php:class:`SQL_Model`) to define the structure of your
     own models, then use object instances to interact with individual records.
 
 Introduction
@@ -24,11 +24,11 @@ this table below:
 | 3  | Alfred | Hitch   | m      |
 +----+--------+---------+--------+
 
-The actual data of this table can be stored inside SQL or noSQL engine,
-but some of the common characteristics persist:
+Data of this table can be stored in SQL or Non-SQL engine, 
+however some of the common characteristics are pertained e.g.:
 
-- Data is presented inside several records
-- Records have same or similar structure
+- Data is stored as individual records (row or schema)
+- All the records have identical or nearly similar structure
 - Each record has unique identifier (id)
 - Each column has type
 
@@ -42,7 +42,7 @@ if you wish change Betty's surname to "Hitch", you would do it differently::
 Concept of models proposes a common format for any data source, which looks
 like this::
 
-    $person->load(1)->set('surname','Hitch')->save();
+    $person->load(1)->set('surname', 'Hitch')->save();
 
 
 Defining the Model
@@ -71,7 +71,7 @@ you need to create your own class by extending Model::
     }
 
 After you do that, you can add 'Model_Person' as you normally do it with
-any other object in agile toolkit::
+any other object in Agile Toolkit::
 
     $person = $this->add('Model_Person');
 
@@ -85,7 +85,7 @@ Note that you also need to properly set the $table property on your model.
 Core Concepts
 =============
 
-Before I continue explaining all the other features and capabilities of the
+Before continuing with explanation of all the other features and capabilities of the
 model in Agile Toolkit, you would need to understand some of the core concepts
 and terminology used by the framework:
 
@@ -134,10 +134,10 @@ Here are a few examples of loading and unloading data::
 
 
     $person->tryLoad(12313123); // no such record
-    echo $person->loaded();  // still false
+    echo $person->loaded();  // will be false
 
 
-    $person->load(12313123); // generates exception
+    $person->load(12313123); // generates an exception
 
 You will see a common pattern in Agile Toolkit pages, where
 models are loaded with the data passed through the GET parameters::
@@ -150,7 +150,7 @@ exceptionis generated and API handles that.
 Generical models
 ----------------
 While a general rule says that all your business models needs to be defined
-as classes extending from Model or Model_SQL, you can , however, have a
+as classes extending from Model or SQL_Model, you can , however, have a
 generic model defined like this::
 
     $m = $this->add('Model', ['table'=>'person']);
@@ -231,7 +231,7 @@ by changing the way how you think while develop your application. In
 Agile Toolkit you do not operate with "table order" instead of operate
 with model::
 
-    $orders -> load($_GET['id'])->delete();
+    $orders->load($_GET['id'])->delete();
 
 What's important here is that $order is a model with a limited data-set.
 
@@ -271,10 +271,10 @@ There are 2 types of basic relations: ``hasOne`` and ``hasMany``::
 Note that Agile Toolkit will automatically add Model_ in front of Order / User
 parameter.
 
-hasOne adds a new field in the current model corresponding of 2 parts: $table of
+``hasOne`` adds a new field in the current model corresponding of 2 parts: $table of
 related model and "_id". You can access the ID field at $order->get('user_id');
 
-hasMany does not create any extra fields in your model.
+``hasMany`` does not create any extra fields in your model.
 
 You can traverse thereference by using method ref()
 
@@ -313,7 +313,7 @@ Data Source
 .. php:method:: setSource
 
     Associate model with a specified data source. The controller could be
-    either a string (postfix for Controller_Data_..) or a class. One data
+    either a string (postfix for ``Controller_Data_..``) or a class. One data
     controller may be used with multiple models.
     If the $table argument is not specified then :php:attr:`Model::table`
     will be used to find out name of the table / collection
@@ -333,7 +333,7 @@ Each model may have a source set. The source is set like this::
 The first argument here is a name of ":php:class:`Controller_Data`" - a special class
 which will control loading and saving of data.
 
-.. note:: If you are extending from Model_SQL you do not need to specify
+.. note:: If you are extending from SQL_Model you do not need to specify
     a data source - it will work with your current database connection. In the
     future versions of Agile Toolkit Modal_SQL will transition in favor of
     setSource('SQL').
@@ -371,13 +371,13 @@ flexibility in data querying they utilize a standardized query language
 (joining, sub-selects, expressions) and has a significantly enhanced
 model class to work directly with the database through DSQL.
 
-To take advantage of those features you must use :php:class:`Model_SQL`.
+To take advantage of those features you must use :php:class:`SQL_Model`.
 This class extends Model but adds features of a typical ANSI SQL directly
-into model. Refer to the documentation of :php:class:`Model_SQL`
+into model. Refer to the documentation of :php:class:`SQL_Model`
 
 You can still use generic Model with SQL driver, such as SQLite, but
 both use slightly different implementations. As of version 4.3 I recommend
-using Model_SQL as it is much more tested and optimized.
+using SQL_Model as it is much more tested and optimized.
 
 Using Caching
 -------------
