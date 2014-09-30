@@ -131,7 +131,7 @@ When you build the query by calling methods, you arguments could be:
 
 The example above will produce query::
 
-    select count(*) from `id`=123 and `expired`<now();
+    select count(*) from user where `id`=123 and `expired`<now();
 
 Value from ``$_GET['id']`` is un-safe and would be parametrized to avoid
 injection. "``now()``\ " however is an expression and should be left as
@@ -177,7 +177,7 @@ let's use the following simplified template::
 To help users interface with our template, we must have the following
 two methods::
 
-    funciton table($table){
+    function table($table){
         $this->args['table']=$table;
         return $this;
     }
@@ -194,7 +194,7 @@ property "args". Next, let's review the rendering part of the arguments.
 This time I'll be using different escaping mechanisms in different
 situations::
 
-    funciton render_table(){
+    function render_table(){
         return $this->bt($this->args['table']);
     }
     function render_set(){
