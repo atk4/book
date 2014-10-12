@@ -105,7 +105,7 @@ Create file ``shared/templates/view/mytemplate.html``::
 
 Then place this UI code::
 
-    $poem = $this->add('View', null, null, ['view/mytemplate']);
+    $this->template->loadTemplate('view/mytemplate');
 
 Notice how we are re-using the existing View class but specifying
 alternative template to it. This can be done with any view. For instance
@@ -115,8 +115,8 @@ your form in a different look.
 A specified template is automatically parsed and a special :php:class:`GiTemplate`
 object will be available through a ``template`` property of a View::
 
-    $poem->template->set('rose_color', 'Pink');
-    $poem->template->set('violet_color', 'Violet')
+    $this->template->set('rose_color', 'Pink');
+    $this->template->set('violet_color', 'Violet')
 
 Finally - when you add one view into another, you may select ``Spot`` where
 it will appear::
