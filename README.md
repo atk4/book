@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/atk4/book.png?label=ready&title=Ready)](https://waffle.io/atk4/book)
 Agile Toolkit Documentation
 ===========================
 
