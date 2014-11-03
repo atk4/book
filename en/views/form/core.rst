@@ -113,7 +113,7 @@ records. Just clicking Save button will return user to the parent page
 
         $form->save();
 
-        if (form->isClicked($save_and_add)) {
+        if ($form->isClicked($save_and_add)) {
             return $form->js()->univ()->redirect($form->app->url());
         }
 
