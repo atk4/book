@@ -1,5 +1,9 @@
+******
 Addons
-======
+******
+
+Agile Toolkit has been designed with extensibility in mind. Any aspect
+of the framework and standard UI can be extended through add-ons.
 
 
 Add-on in Agile Toolkit is a collection of PHP class files or some
@@ -9,18 +13,24 @@ Add-on can be installed through Composer or some proprietary add-ons may
 be distributed differently. Add-ons can also be added directly from
 github, etc.
 
-Agile Toolkit will continue to work OK without Agile Toolkit, while your
-project may depend on one or several add-ons for it's functionality.
+Agile Toolkit framework does not rely on any add-on. Your
+project however may depend on one or several add-ons for it's functionality.
 
-Any package from packagist.org are valid add-ons fro Agile Toolkit.
+Any package from packagist.org are valid add-ons for Agile Toolkit.
 Using composer add-ons with Agile Toolkit is like with any other
 project.
 
-What is Agile Toolkit Add-on
-----------------------------
+If add-on depends on Agile Toolkit, we will call it "Agile Toolkit add-on".
 
-An Agile Toolkit Add-on relies on the ATK framework and may use some of
-the following features:
+Finally - some applications (such as Agile Toolkit CMS app) can introduce
+new class of add-ons to extend it's own functionality.
+
+What is Agile Toolkit Add-on
+============================
+
+An Agile Toolkit Add-on relies on the ATK framework and therefore typically is
+more powerful than any conventional add-on you would get from packagist.org.
+Some of the additional features include:
 
 -  Initiator - enables automatic inclusion and initialization of add-on
    in the project.
@@ -31,16 +41,48 @@ the following features:
 -  Database migrations - add-ons may rely on database and provide
    migration scripts.
 
+Agile Toolkit addons will heavily rely standard user interface widgets and
+will provide you with extra page classes, views, form fields and more.
 
-Types of add-ons
-^^^^^^^^^^^^^^^^
+There might be an "Initiator" class inside add-ons namespace. This class
+name is considered special by :php:class:`App_Admin` and it will be
+automatically added into the application when add-on is active.
 
-.. todo:: Mayur - please clarify addon types:
+This gives ability for certain add-on to add new menu items in your admin
+backend and route pages to themselves.
 
-Open-source PHP class dsitribution usually focus on providing you with
-decoupled class implementation with dependencies. Agile Toolkit
-add-ons assume that you have Agile Toolkit installed and working. This
-allows add-on developers to deploy a much more higher-level add-ons:
+An addon can be activated by putting this code inside your Admin application
+class::
+
+    $this->add('myaddon/Initiator');
+
+For more information you should see ``readme.md`` file in each individual add-on.
+
+Sandbox Extensions
+==================
+
+Sandbox is an application written with Agile Toolkit and therefore it has
+it's own class of add-ons. One example of such an extension would be a
+"Theme Configurator" - a page allowing you to tweak your CSS theme. Sandbox
+extensions are only useful along with Sandbox and they are not installed on
+production environment.
+
+All the things add-on can extend
+================================
+
+One add-on may contain many various classes and assets.
+
+.. toctree::
+    :maxdepth: 1
+
+    addon/views
+    addon/models
+    addon/fields
+    addon/columns
+    addon/apps
+
+
+
 
 
 

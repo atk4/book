@@ -35,6 +35,14 @@ Using advanced CRUD features
     property is specified, it's used for both Grid and Form as :ref:`Actual Fields`.
     If you also specify grid_fields, then default_fields will be used for model only.
 
+    CRUD accepts extra argument for setModel - if third argument is specified then
+    instead of $default_fields it will be used as actual field for the Grid mode.
+
+    If you would like to make "name", "details" fields editable but only show "name"
+    in grid mode, use::
+
+    $this->setModel('User', ['name','details'], ['name']);
+
 .. php:method:: addRef($relation, $optoins)
 
     Assuming that your model has a $relation defined, this method will add a button

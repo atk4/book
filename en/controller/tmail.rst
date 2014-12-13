@@ -19,6 +19,9 @@ General Usage
 
 .. php:method:: loadTemplate
 .. php:method:: set
+
+    Set does not affect tags which a
+
 .. php:method:: send
 
 Typical usage pattern::
