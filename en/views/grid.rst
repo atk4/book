@@ -327,8 +327,8 @@ If you want to implement your own type and it's associations, look into `Creatin
 Field ``display()``
 ^^^^^^^^^^^^^^^^^^^
 
-Allows you to specify formatter exactly. Does not affect the behavior of the model. Can either target all views with ``type('password')`` or only
-grid with ``type(array('grid'=>'password'))``.
+Allows you to specify formatter exactly. Does not affect the behavior of the model. Can either target all views with ``display('password')`` or only
+grid with ``display(array('grid'=>'password'))``.
 
 You can specify a display type either inside your model definition or inside presentation logic, like this:
 
