@@ -1,5 +1,5 @@
 **************************
-Pattern Routing Contnoller
+Pattern Routing Controller
 **************************
 
 .. php:class:: Controller_PatternRouter
