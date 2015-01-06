@@ -61,8 +61,8 @@ types. You can easily extend by registering your own types of resources.
 +----------+-------------------------+---------------------------------------------------------------------+
 | public   | public                  | Contains directly acessible resources such as images, fonts etc     |
 +----------+-------------------------+---------------------------------------------------------------------+
-| js       | public/js               | JavaScript include files. Use {js}myjs.js{/}                        |
-|          | public/js/atk4/js       | or $this->js()->_load('myjs')                                       |
+| js       | public/js               | JavaScript include files. Use {js}myjs.js{/} inside tempaltes       |
+|          | public/js/atk4/js       | or $this->js()->_load('myjs') in class                              |
 +----------+-------------------------+---------------------------------------------------------------------+
 | css      | public/css              | Stylesheets, use {css}mycss.css{/} inside tempaltes.                |
 |          | public/css/atk4/css     |                                                                     |
