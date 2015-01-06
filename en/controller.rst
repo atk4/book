@@ -25,8 +25,8 @@ of controller use in Agile Toolkit.
 
 Example::
 
-    $this->ad('Text')->set('World! ');
-    $o2 = $this->ad('Text')->set('Hello, ');
+    $this->add('Text')->set('World! ');
+    $o2 = $this->add('Text')->set('Hello, ');
     // Would output - "World! Hello, "
 
     $this->add('Order')->move($o2, 'first')->now();
