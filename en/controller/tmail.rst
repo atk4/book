@@ -94,7 +94,7 @@ Configuration Parameters
 
 TMail will recognize some settings in your configuration file::
 
-    $config['tmail']['form'] = 'John Smith <john@example.com>';
+    $config['tmail']['from'] = 'John Smith <john@example.com>';
     $config['tmail']['transport'] = 'SES';
 
     // Most transports would implement following optional settings:
