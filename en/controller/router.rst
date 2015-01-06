@@ -75,7 +75,7 @@ extraction logic, but this transformation must take place inside your
 ``Application::init()``.
 
 You should also note how slashes are distributed. ``base_url`` has no
-training slash, while ``base_path`` always begins and ends with a slash.
+trailing slash, while ``base_path`` always begins and ends with a slash.
 
 .htaccess
 ~~~~~~~~~
