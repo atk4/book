@@ -66,12 +66,13 @@ with physical data storage without knowing details about the specifics of
 data layer. In other words:
 
 - Models allow you to use most of MySQL features without SQL language.
-- Models allow you to use most of MongoDB features without using their direct API.
-- Any REST API can be used as a model source
+- Models allow you to use most of MongoDB features without using their API directly.
+- Any REST API can be used as a model source.
 - Models can work with arrays, session, filesystem etc
 - Models support transparent caching
+- You can extend by adding new data sources for a model
 
-If you intend to work with any data, you should know Models.
+If you intend to work with any data, you should learn to use Models.
 
 Further Reading
 ---------------
@@ -123,7 +124,7 @@ GET argument, they will be visible on exception screen, when your
 database is unreachable. You can disable error output on the screen, see
 chapter for "Application" for more information.
 
--  Specifying DNS
+-  Specifying DSN
 -  Using different connection modes
 -  Counting number of queries in application
 -  Using multiple connections

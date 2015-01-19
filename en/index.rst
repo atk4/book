@@ -3,27 +3,66 @@
 Welcome
 #######
 
-Agile Toolkit contains everything you need to develop web apps. It is a
-self-sufficient PHP framework modeled after Desktop UI Toolkits. Agile
-Toolkit may have some similar concepts to other Web MVC frameworks, but
-most of the concepts are approaches are re-considered and improved.
+Agile Toolkit delivers a easy and worry-free way to build, deploy and scale
+web applications. If you are new to web development, Agile Toolkit is the
+easiest way to get your web app on-line.
+
+Before you start comparing Agile Toolkit to other PHP frameworks, you need
+to understand that there are 3 major parts to the whole Agile Toolkit
+experience:
+
++-----------------------------------------+-------------------------------------------------+------------------------------------------------------------------+
+| Sandbox                                 | Agile Toolkit Framework                         | Agile Cloud                                                      |
++=========================================+=================================================+==================================================================+
+| Installed on your local computer, helps | Provides foundation for your                    | Deploy your Web App into a secure environment on our Web Server. |
+| you during development of your web app. | web application and Web User interface          | Assign any domain. Use as production environment.                |
+| Downloadable from agiletoolkit.org      | Included when downloading from agiletoolkit.org |                                                                  |
++-----------------------------------------+-------------------------------------------------+------------------------------------------------------------------+
+| Similar to XCode + Instruments          | Similar to PHP frameworks + CSS Frameworks      | Similar to GitHub Pages, but runs on PHP and Docker              |
+|                                         | + Object Oriented User Interface                |                                                                  |
++-----------------------------------------+-------------------------------------------------+------------------------------------------------------------------+
+| Free for OpenSource Apps,               | Free for any use, Licensed under MIT.           | Limited use for free users.                                      |
+| Professional subscription required      | Professional subscription required for          | Professional subscription can host up to 5 apps.                 |
+| for commercial apps.                    | support and some add-ons.                       |                                                                  |
++-----------------------------------------+-------------------------------------------------+------------------------------------------------------------------+
+
+The remainder of this book will focus on documenting Agile Toolkit Framework component. To learn more about
+Sandbox and Agile Cloud, go to http://agiletoolkit.org/ and click Learn More.
+
+What is included in Agile Toolkit Framework
+===========================================
+
+Agile Toolkit as a foundation of your application offers you much more value
+than any other typical framework. It goes beyond PHP and also adds Agile CSS,
+jQuery integration, HTML templates and PHP Object-Oriented layer for you.
+
+Similarly to development in Windows, Mac or Mobile platforms you work with
+UI objects that are ready to be used out-of-the box. Additionally the framework
+integrates other components with the cloud infrastructure, to simplify
+your experience.
+
+Our goal is to let you focus on the most important bits of your application
+while we cover technical and implementation details of your app.
+
+.. figure:: figures/index-atk-compared.png
+
+We invite you on an exciting journey you develop your next Web App with
+the least amount of code possible.
 
 Getting Started
 ===============
 
-Agile Toolkit PHP framework can be divided into 3 major parts:
+Agile Toolkit development focuses on 3 steps in your application building:
 
-#. Data Layer - working with the database, APIs, etc.
-#. UI Layer - creating fancy UI interfaces and outputing HTML.
-#. Extensions - a lots and lots of ways to improve things.
+#. Business Logic Layer - defining models, data sources and describing processes.
+#. UI Layer - creating fancy UI to interface with Business Layer.
+#. Enhancing - enhancing standard UI with your own.
 
-Agile Toolkit goal is to make steps #1 and #2 as simple and straigtforward
-for you, so you will be spending most of the time improving your
-working application. To demonstrate with an example, we will build
-a very simple a Web User Interface for entering and managing a List of Books.
+Agile Toolkit attempts to simplify each step. To demonstrate with an example, we will build
+a very simple a Web User Interface for entering and managing a List of Books in a library.
 
 
-Create a Model
+1. Create a Model
 ------------
 
 Create a file shared/lib/Model/Book.php::
@@ -49,7 +88,7 @@ Create a file shared/lib/Model/Book.php::
     PHP method calls to describe model structure, it's relationship and where
     the data is physically located (PHP Session in our example).
 
-Build Web User Interface
+2. Build Web User Interface
 ------------------------
 
 Because user will interract with your web application through the browser,
@@ -60,7 +99,7 @@ One of the views is called "Page" and represents a URL user can navigate to.
 Another View is a CRUD (Record Manager UI allowing to create update or delete
 records).
 
-To allow user to interract, you just need to add "CRUD" into "Page". Open file
+To allow user to interract, you just need to add "CRUD" into a "Page". Open file
 admin/page/index.php and add::
 
     class page_index extends Page {
@@ -83,20 +122,29 @@ Explanation
 You will be back through the process of creating models and UI over and over
 again for all the new data types you will want to add to your web application.
 
-.. figure:: figures/user-to-data-storage.png
+The UI component of your application interacts with Data Source through Model:
 
-   User Accessing Data
+.. figure:: figures/user-to-data-storage.png
 
 Your web application can have many different pages and each page may place
 one or several "Views" and connect each of them with Models. Knowing only
 this much you can already create a full admin backend for your app.
 
 
-Extending
+Enhancing
 =========
 
-Now that you have got the basic editing, you can pimp-it-up a little.
+Now that you have got the basic editing, we will lightly look into Enhancing
+process. You need to know that there many different types of enhancing you
+can perform, here are few:
 
+- Improve Workflow
+- Improve UI look and feel
+- Build your own theme
+- Enhance of Business Logic
+
+
+We will try to improve Workflow by adding ability to "borrow" the book easily.
 Open your model file and add a new method inside your model::
 
     function borrow() {
@@ -152,8 +200,9 @@ Toolkit into your existing code structure you might face some difficulties.
 For the best experience start a new application and improve it as you
 read through this documentation.
 
-
-
+Agile Toolkit is a unique development environment which you can start using
+with a very basic knowledge. It is however quite important to come back to this
+book if you are willing to unlock more potential inside your app.
 
 .. meta::
     :title lang=en: .. Agile Toolkit Documentation
