@@ -24,7 +24,7 @@ this table below:
 | 3  | Alfred | Hitch   | m      |
 +----+--------+---------+--------+
 
-Data of this table can be stored in SQL or Non-SQL engine, 
+Data of this table can be stored in SQL or Non-SQL engine,
 however some of the common characteristics are pertained e.g.:
 
 - Data is stored as individual records (row or schema)
@@ -44,6 +44,8 @@ like this::
 
     $person->load(1)->set('surname', 'Hitch')->save();
 
+Once we have a single unified way to interact with data, our User Interface
+Views can now seamlessly load and save data using the model you specify.
 
 Defining the Model
 ==================
@@ -55,7 +57,12 @@ use it.
     recommend you to initially do this manually. Later in this documentation
     I'll give my reasons as to why.
 
-Model in Agile Toolkit is object of a "Model" class. To create your own model
+.. note:: Some databases can offer non-structured data. For that purpose Agile
+    Toolkit Models allow you to access fields even if those fields are not
+    defined. You can also use advanced PHP logic to dynamically define
+    fields depending on your situation.
+
+Model in Agile Toolkit is an object of a "Model" class. To create your own model
 you need to create your own class by extending Model::
 
     class Model_Person extends Model {
@@ -70,16 +77,17 @@ you need to create your own class by extending Model::
         }
     }
 
-After you do that, you can add 'Model_Person' as you normally do it with
-any other object in Agile Toolkit::
+The ``setSource`` part here is optional and it's linking your model with
+a physical data storage. It enables you to load and save data seamlessly.
+
+After you have defined yoru model, you can create objects of 'Model_Person'
+as you normally do it with any other object in Agile Toolkit::
 
     $person = $this->add('Model_Person');
 
-Note that you also need to properly set the $table property on your model.
-
 .. php:attr:: table
 
-    Contains name of table, session key, collection or file, depending on
+    Contains name of table, collection, file or session key, depending on
     data controller you are using.
 
 Core Concepts
@@ -102,7 +110,7 @@ for another record.
 
 .. php:method:: tryLoad
 
-    Ask the controller data to load the model by a given $id
+    Ask the data controller to load the model data from source by a given $id
 
 .. php:method:: load
 
@@ -119,23 +127,19 @@ for another record.
 Here are a few examples of loading and unloading data::
 
     $person = $this->add('Model_Person');
-
     echo $person->loaded();  // false, not loaded
-
 
     $person->load(1);
     echo $person->loaded();  // true now
 
-    $person->load(2);     // no need to unload
+    $person->load(2);        // no need to explicitly unload
     echo $person->loaded();  // still true
 
     $person->unload();
     echo $person->loaded();  // false now
 
-
     $person->tryLoad(12313123); // no such record
     echo $person->loaded();  // will be false
-
 
     $person->load(12313123); // generates an exception
 
@@ -145,12 +149,12 @@ models are loaded with the data passed through the GET parameters::
     $this->person  = $this->add('Model_Person')->load($_GET['id']);
 
 If the specified ID passed here is not found in the database, then
-exceptionis generated and API handles that.
+exception is generated and is handled by API.
 
-Generical models
+Generic models
 ----------------
 While a general rule says that all your business models needs to be defined
-as classes extending from Model or SQL_Model, you can , however, have a
+as classes extending from Model or SQL_Model, you can, however, have a
 generic model defined like this::
 
     $m = $this->add('Model', ['table'=>'person']);
@@ -159,7 +163,6 @@ generic model defined like this::
 
 The short notation demonstrated here is good if you are simply willing to
 test model functionality and do not require comprehensive model definition.
-
 
 Accessing and Changing field values
 -----------------------------------
@@ -181,7 +184,6 @@ To complement the example below, I'll also use :php:meth:`Field::defaultValue`
 inside field definition. In this example, I'm using generic class for the model,
 instead of extending it and creating a separate model::
 
-
     $m = $this->add('Model', ['table'=>'person']);
     $m->addField('name');
     $m->addField('age')->type('int')->defaultValue(18);
@@ -200,44 +202,71 @@ You can also use model as Array, instead of set / get use square brackets::
 
 .. note:: You can't use ``$m['age']++`` due to some PHP limitation.
 
+.. php:attr:: data
+
+    This is a actual property of the model which contains current field
+    data. Avoid using this property directly and use get/set or array-access
+    instead.
+
+.. note:: It is recommended that you keep field types in their native form
+    for PHP. For example if you operate with boolean type field, use ``true``
+    and ``false`` instead of "Y" / "N" or 1 / 0 values.
+
+    Setting ``->type()`` on the field will actually help data controller
+    to properly convert data types. For example MongoDB controller will
+    convert "date" from PHP format into MongoDate when storing data.
 
 .. _model dataset:
 
 The Dataset
 -----------
 In a traditional database design, the underlying database engine would
-group all the data into tables even if the data belongs to different
-users. For example, your system might contain list of Users and each User
-could have multiple Orders. User must only be able to see orders
-by that user and not other orders. Similarly he should be able to modify
-only records which are available to him.
+group all the data into tables for optimisation purposes. One table, however,
+can contain different "types" of data. "user" table may contain both regular
+users and admin users. A boolean field "is_admin" could be used to separate
+regular users from admin.
+
+Agile Toolkit heavily uses a term of "DataSet", which is a set of records
+from a table possibly restricted by some condition.
+
+In my previous example you have one data-set - 'Model_User' and another,
+mach smaller dataset - 'Model_Admin'. The purpose of a data-set is to
+make sure that when you work with 'Model_Admin' it can't possibly load
+record from outside of it's allowed dataset (e.g. non-admin user).
+
+Another use of DataSet is record ownership. Imagine a system where
+users can create orders. Each order would have "user_id" field and
+user must only be able to access orders where user_id matches his own ID.
 
 A classical problem which often occurs in software design is when you
-show user his own orders in a list on a page using this SQL query::
+individually design queries. It's a very common mistake where developer
+forgets to add condition and system can now load order owned by another user::
 
-    select * from `order` where user_id = ?
+    select * from `order` where user_id = ? and id = ?
 
-Each order would contain "cancel" button pointing to the delete page and
-passing ``id`` parameter. The delete page would contain the following
-query::
+Imagine a separate deletion page with a query like this::
 
     delete from `order` where id = ?
 
-The problem here is that if User A known ID of order owned by another
-user, he can easily cancel that order.
+While our first query would correctly verify user_id and only allow loading
+of user's record, the deletion query lacks an extra check and by cleverly
+substituting ID, user can now delete orders belonging to anothre user.
 
-Agile Toolkit ORM framework allows you to entirely avoid this problem
-by changing the way how you think while develop your application. In
-Agile Toolkit you do not operate with "table order" instead of operate
-with model::
+Agile Toolkit ORM framework trains you to think in term of DataSets.
 
-    $orders->load($_GET['id'])->delete();
+    $user = $this->add('Model_User')->load($user_id);
+    $orders = $user->ref('Order');
+    $orders -> load($_GET['id'])->delete();
 
-What's important here is that $order is a model with a limited data-set.
+The above code in Agile Toolkit correctly creates a DataSet with
+a 'Model_Order' which can only load records of a specified user.
 
-Data Set is a collections of records which model is allowed to load, update
-or delete. When developing an app, you must operate with the objects
-which already limit the data-set. Here is one example how to do this::
+By learning to write code like that you will avoid many errors in your
+code.
+
+
+To summarize: Data Set is a collections of records which model is allowed
+to load, update or delete. Here is how you can define DataSet conditions::
 
 
     class Model_MyOrder extends Model_Order {
@@ -250,17 +279,24 @@ which already limit the data-set. Here is one example how to do this::
 
 
     // And then
-    $orders = $this->add('Model_MyOrders');
+    $my_order = $this->add('Model_MyOrders');
+    $my_order['name'] = 'Test Order';
+    $my_order->save();
 
-The same model object must be used for both displaying the list and executing
-delete operations to make sure all the conditions applied properly.
+    // this automatically sets order.user_id to that of a currently
+    // logged-in user
 
-There is however a better way to deal with conditions, which is explained
-in the next section.
+The same code can also be written differently::
+
+
+    $my_order = $this->app->auth->model->ref('Order');
+    $my_order['name'] = 'Test Order';
+    $my_order->save();
+
 
 Relation Traversal
 ------------------
-When you define model, you can specify how they relate to other models.
+When you define models, you can specify how they relate to other models.
 There are 2 types of basic relations: ``hasOne`` and ``hasMany``::
 
     $user->hasMany('Order');
@@ -268,49 +304,77 @@ There are 2 types of basic relations: ``hasOne`` and ``hasMany``::
     $order->hasOne('User');
 
 
-Note that Agile Toolkit will automatically add Model_ in front of Order / User
-parameter.
+Note that Agile Toolkit will automatically add Model_ in front the argument
+if it's not present.
 
-``hasOne`` adds a new field in the current model corresponding of 2 parts: $table of
-related model and "_id". You can access the ID field at $order->get('user_id');
+.. php:method:: hasOne(model_name, field)
+    Establishes many-to-one relationship. $order->hasOne('User');
 
-``hasMany`` does not create any extra fields in your model.
+    This also adds 2 fields to the model:
 
-You can traverse thereference by using method ref()
+    ``user_id`` field will be used to store "id" of related record.
+
+    ``user`` expression is added which will display title of related record.
+
+
+.. php:method:: hasMany(model_name)
+    Establishes one-to-many relationship. $user->hasMany('Order');
+
+    Does not add any fields to your model.
 
 .. php:method:: ref
 
     Traverses reference of relation
 
-The following example is an alternative approach to the problem described in
-the last chapter:
+You can traverse thereference both references using ref, however you must
+properly use case to indicate direction::
 
-- User hasMany Order
-- User can only access their orders
-- User can cancel only his own orders
+    $user = $my_order->ref('user_id');
 
-To upgrade the logic, you'll need to add this line to definition of user model::
+    $user_orders = $user->ref('Order');
 
-    $this->hasMany('Order');
+Few more rules:
 
-Then you will be able to access all orders of the user without any extra
-classes or conditions::
+- $my_order->ref('user_id'); in this case $my_order model must be loaded.
+- ref('user_id') returns user model which will also be loaded.
+- $user->ref('Order') must similarly be called on a loaded model.
+- ref('Order') will return model which is NOT loaded.
+- ref('Order') will restrict DataSet of returned model to records related to $user
+
+Getting back to our example::
 
     $user = $this->app->auth->model;
     $order = $user->ref('Order');
 
     $order->load($_GET['id'])->delete();
 
-When traversing into hasMany the model must be loaded and the current id value
-will automatically be applied as a condition on Order model dataset.
+First line will give us model of a currently-logged in user. The definition
+of Model_User must have relation defined (hasMany('Order')).
 
+Second line traverses through that relation and will return a new model.
+This model will not be loaded, but it's DataSet will automatically be restricted
+to "user_id = ?" - that of a currently-logged user ID.
 
-.. todo:: deep taversal
+When load() and delete is attempted on next line, Agile Toolkit will only
+be able to load order of a currently logged-in user.
+
+.. note:: Traversal in Agile Toolkit works even if models are using
+    different data sources. For example a model stored in MongoDB can
+    relate to model stored in SQL.
+
+.. todo:: deep taversal is a concept allowing you to traverse one-to-many
+    relation of unloaded model.
+
+    $user->ref('Order')->ref('Order_Line');
+
+    This is not implemented in Agile Toolkit yet, however you can get
+    around this problem with some expression magic for SQL.
+
 
 Data Source
 -----------
 
-.. php:method:: setSource
+.. php:method:: setSource($driver, $table)
 
     Associate model with a specified data source. The controller could be
     either a string (postfix for ``Controller_Data_..``) or a class. One data
@@ -342,8 +406,12 @@ The second argument is optional and if it's specified it will override
 :php:attr:`Model::table` of the model. The type of this argument
 can vary from driver to driver.
 
-.. todo:: write about lazy write (dirtiness)
+.. note:: Calling load() and then save() right after may not actually
+    execute save. Model automatically tracks fields which have been
+    changed from it's initial values and will only save those into
+    data source.
 
+.. todo:: expand section on using is_dirty();
 
 Below are table comparing different drivers and showing how the meaning of table
 and condition change.
@@ -377,7 +445,8 @@ into model. Refer to the documentation of :php:class:`SQL_Model`
 
 You can still use generic Model with SQL driver, such as SQLite, but
 both use slightly different implementations. As of version 4.3 I recommend
-using SQL_Model as it is much more tested and optimized.
+using SQL_Model as it is much more tested and optimized. You will also
+be able to use expressions and joins freely.
 
 Using Caching
 -------------
@@ -395,6 +464,9 @@ caches.
 The same data controller class can be used as either primary source or
 as a cache.
 
+.. todo:: expand this section, write about setCache(), strategies
+    and use of multiple caches.
+
 How to write Model Code
 -----------------------
 Model is an essential part of your application containing business logic.
@@ -402,26 +474,24 @@ You must refrain from using any of the following from inside your model:
 
 - GET and POST arguments, which are exclusive to app running in Web environment
 - UI objects or pages, which may not be there in CLI application.
-- Always document and think about use cases when model data is loaded / unloaded.
+- Add method documents and think about use cases when model data is loaded / unloaded.
 - Think about transactions and commits.
+- Write test-cases for your models.
 
 There is a special rule for relying on authenitcation data. In this documentation
 I have given example for MyOrders model, which display orders of the currently
 logged-in user. This is a valid usage pattern, but you must use it in a separate
-class.
+class which implies reliance on user being logged in.
 
-Another example is if your application have a system-wide filter. You might want
+Another example of external dependency being valid is if your application have a
+system-wide filter. You might want
 to create Model_FilteredOrder which would automatically apply conditions from
 the global filter, but you should not do that inside the base model.
 
 With those basic requirements in mind, you can now create methods inside
 your model class to wrap up some business logic.
 
-
-
-
-There
-
+.. todo:: REVIEW beyond this point.
 
 Model data and methods
 ~~~~~~~~~~~~~~~~~~~~~~
