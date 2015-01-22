@@ -73,6 +73,31 @@ Although this seems like a regular JS Chain, reload() will actually pass an
 URL of current page (including :ref:`Sticky GET`) and cut options (See :ref:`cutting`)
 for object reloading.
 
+This method should be used for dynamically changing part of your page. The above
+example would make $grid reload when the button is clicked. Remember that
+Agile Toolkit takes care of re-binding the events for the reloaded part of the
+page, so in the above case the "reload" click event will automatically be
+re-assigned after grid (including a button) is reloaded.
+
+Method ``reload()`` takes several arguments, but I'll only describe the
+first one. It's an optional array with extra GET arguments which the page will
+recieve. Example::
+
+    $grid->addButton('Filter Girls')->js('click', $grid->js()->reload(['gender'=>'F']));
+    $grid->addButton('Filter Boys')->js('click', $grid->js()->reload(['gender'=>'M']));
+
+    if($this->app->stickyGET('gender')){
+        $grid->model->addCondition('gender', $_GET['gender']);
+    }
+
+This example now adds 2 buttons. Both button will reload the grid, but they would pass
+an extra GET argument to the AJAX request (gender). Below we want to add condition
+to the grid, if the gender is present.
+
+User will never see this argument in the URL of his browser, because it's passed
+in through AJAX reload. We do need to make this argument sticky, because Grid
+may contain paginatior and we don't want it to forget the condition.
+
 Off-page reload.
 ================
 
