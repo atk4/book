@@ -5,7 +5,7 @@ Model Basics
 .. php:class:: Model
 
     Model class improves how you interact with the structured data. Extend
-    this class (or :php:class:`SQL_Model`) to define the structure of your
+    this class (or :php:class:`Model_SQL`) to define the structure of your
     own models, then use object instances to interact with individual records.
 
 Introduction
@@ -87,7 +87,7 @@ as you normally do it with any other object in Agile Toolkit::
 
 .. php:attr:: table
 
-    Contains name of table, collection, file or session key, depending on
+    Contains name of table, session key, collection or file, depending on
     data controller you are using.
 
 Core Concepts
@@ -110,7 +110,7 @@ for another record.
 
 .. php:method:: tryLoad
 
-    Ask the data controller to load the model data from source by a given $id
+    Ask the controller data to load the model by a given $id
 
 .. php:method:: load
 
@@ -150,6 +150,11 @@ models are loaded with the data passed through the GET parameters::
 
 If the specified ID passed here is not found in the database, then
 exception is generated and is handled by API.
+
+
+.. php:method:: reload
+
+    Unloads then loads current record back. Use this if you have added new fields
 
 Generic models
 ----------------
@@ -204,9 +209,8 @@ You can also use model as Array, instead of set / get use square brackets::
 
 .. php:attr:: data
 
-    This is a actual property of the model which contains current field
-    data. Avoid using this property directly and use get/set or array-access
-    instead.
+    Curretly loaded record data. This information is embedded in the
+    model, so you can re-use same model for loading multiple records.
 
 .. note:: It is recommended that you keep field types in their native form
     for PHP. For example if you operate with boolean type field, use ``true``
@@ -377,7 +381,7 @@ Data Source
 .. php:method:: setSource($driver, $table)
 
     Associate model with a specified data source. The controller could be
-    either a string (postfix for ``Controller_Data_..``) or a class. One data
+    either a string (postfix for Controller_Data_..) or a class. One data
     controller may be used with multiple models.
     If the $table argument is not specified then :php:attr:`Model::table`
     will be used to find out name of the table / collection

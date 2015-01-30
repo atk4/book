@@ -101,7 +101,7 @@ may contain paginatior and we don't want it to forget the condition.
 Off-page reload.
 ================
 
-Sometimes the original object is not available to cretae a reload(). Assuming
+Sometimes the original object is not available to call a reload(). Assuming
 you have two pages::
 
     // Page1

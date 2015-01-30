@@ -682,6 +682,14 @@ Using Session
 Session management
 ~~~~~~~~~~~~~~~~~~
 
+.. php:method:: memorize()
+
+.. php:method:: recall()
+
+.. php:method:: learn()
+
+.. php:method:: forget()
+
 All objects in Agile Toolkit come with four methods to access session
 data: memorize(), learn(), forget() and recall(). You can specify the
 “key”, which will be used in scope of a current object:
