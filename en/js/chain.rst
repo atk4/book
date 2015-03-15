@@ -315,6 +315,18 @@ Using UNIV chain
 2. Include your chain with ``$this->js()->_load('file');``
 3. Execute your method with: ``js()->univ()->test();``
 
+.. note::
+    
+        UNIV is a bad name, and not self explaining. 
+        refactor it to UI and everything would be more
+        inutitive. or use other name, but "univ" simply
+        does not make any sense at all. another name
+        could be CUSTOM or EXT for extension 
+        as extended for this app only. 
+        
+        $this->js()->custom()->test();
+        or
+        $this->js()->ext()->text();
 
 Ugly insecure JavaScript inclusion
 ----------------------------------
