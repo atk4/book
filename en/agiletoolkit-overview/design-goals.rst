@@ -33,6 +33,36 @@ used objects is a :php:class:`Form`. Here is a simple form example::
         $form->js()->univ()->alert('Hello, ',$form['name']);
     }
 
+
+Some Comments: 
+
+    univ() is not clear in this context for a beginner, as it does not
+    explain itself. it would be easier to change it to ui() as an alert
+    box is a resolut of rendering ui. 
+    
+    objects of form like name could be accessed by object attribute
+    instead of array eg. 
+    $form->js()->ui()->alert('Hello, ', $form->name );
+    
+    by having a smart __get() you could remove some brackets
+    class Form {
+        ...
+        function __get( $name, $params ) {
+            if ( !isset( $this->name ) && is_function( $this->name ) ) {
+                return $this->$name(); 
+            }
+        }
+        ...
+    }
+    
+    then you can write
+    $form->js->ui->alert('Hello, ', $form->name );
+    
+    adding fields and buttons is not consistent syntax, would be better to
+    change the addField into add('Field', so its similar to add('Button')
+    
+    $form->add('Field','Line', ... );
+
 Compared to the vanilla PHP approach to forms, this method gives
 tons of advantages already:
 
