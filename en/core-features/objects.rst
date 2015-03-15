@@ -170,6 +170,43 @@ Some shorthand methods also allow you to omit part of the class prefix:
     $form->addField('Line','name');  // Use this!
 
 
+.. note::
+  This syntax is confusing, sometimes its $form->add('Field') and sometimes
+  its $form->addField(...) there should only be one way to write it. 
+  
+  $form->add(...) is the abstract one and more flexible and works always, 
+  so this should be the default. the shorthands of addField can also be achieved
+  with the default syntax. 
+  
+  $form->addField('Line','name');
+  will be
+  $form->add('Field','Line','name');
+  
+  why is there a Field_... Prefix anyways, does not make sense, and even if
+  it is needed internally then have a special case in ->add() function to 
+  auto-prefix it. Now its very confusing. 
+  
+  similar with button, the option is skipped in the example which could 
+  prevent the chaining. 
+  
+  $form->addButton('Click me!'); 
+  will be
+  $form->add('Button', ['label'=>'Click me!'] ); 
+  
+  spot: form_buttons should be skipped and similar to addButton it should
+  handle it automatically. if you want to keep namespaces and put buttons
+  and fields in a group you coud write
+  $form->buttons->add('Button', ['label'=>'Click Me!'] ); 
+  which will be more clear. 
+  
+  as syntactial sugar one could simplify the options and instead have
+  a special case when $options = type: string then use it as value for label
+  eg. same effect
+  $form->add('Button','Click me!'); 
+  which is basically as short and precice like $form->addButton but using
+  the global ->add() syntax and removes redundancy and confusion. 
+  
+
 Adding Models with setModel()
 -----------------------------
 
