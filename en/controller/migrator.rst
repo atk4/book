@@ -32,8 +32,7 @@ Usage::
 
     Find migrations and execute them in order.
 
-    .. warning:: Use ";" semicolon between full statements. If you leave empty statement
-    between two semilocons MySQL ->exec() seems to fail.
+    .. warning:: Use ";" semicolon between full statements. If you leave empty statement between two semilocons MySQL ->exec() seems to fail.
 
 .. php:method:: getStatusModel
 
