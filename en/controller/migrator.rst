@@ -2,6 +2,8 @@
 Database Migrator
 *****************
 
+.. note:: available in Agile Toolkit 4.3.1 or later.
+
 Migrator is a class which is capable of applying patches to your database.
 The migrator in Agile Toolkit is implemented in a most basic way. It is
 designed to persist migration statistics of MySQL inside database itself.
