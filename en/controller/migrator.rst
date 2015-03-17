@@ -27,8 +27,8 @@ problems with cloud deployments.
 
 Usage::
 
-    $this->add('Controller_Migrator_MySQL')
-        ->migrate();
+    $migrator = $this->add('Controller_Migrator_MySQL');
+    $migrator->migrate();
 
 .. php:method:: migrate
 
