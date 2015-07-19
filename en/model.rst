@@ -82,7 +82,7 @@ Further Reading
 
     model/core
     model/fields
-    model/relation
+    model/relations
     model/dsql
     model/sql
     model/mongo
