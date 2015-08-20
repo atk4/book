@@ -64,7 +64,7 @@ If you are dealing with read-only data source, you should create empty
 methods for save/delete and throw exception when an attempt is made to
 store data.
 
-.. php:meth:: setSource
+.. php:method:: setSource
 
     Associates model with the collection/table in this data store identified
     by second argument. For instance for Controller_Data_SQL the second
@@ -74,7 +74,16 @@ store data.
     to avoid conflicts between different controllers and to allow user to
     use one controller with multiple models.
 
-.. php:meth:: save
+    You should use method d() to access this property. We recommend
+    that you use the following format for specifying argument::
+
+        $m->setSource('YourController', 'table');
+
+        $m->setSource('YourController', ['table', 'arg1'=>'val1', ..]);
+
+
+
+.. php:method:: save
 
     Writes record containing $data into the data store under id=$id.
     If the ID field can vary, consult $model->id_field. You do not have
@@ -85,7 +94,7 @@ store data.
     then record must be overwritten. Method must return $id of stored record.
     This method may throw exceptions.
 
-.. php:meth:: delete
+.. php:method:: delete
 
     Locate and remove record in the storade with specified $id. Return
     true if record was deleted or false if it wasn't found. In most
@@ -93,21 +102,12 @@ store data.
     to make sure the record is accessible with specified conditions,
     so you can silently ignore error.
 
-.. php:meth:: loadById
+.. php:method:: loadById
 
     Locate and load data for a specified record. If data backend supports
     selective loading of fields, you may call model->getActualFields
     to get a list of required fields for a model. When non-array is
     returned, you should load all fields.
-
-.. php:meth:: prefetchAll
-
-    Create a new cursor and load model with the first entry. Returns cursor,
-    which will then be passed to loadCurrent() for loading more results.
-
-    If the data store does not support cursors, then fetch all data
-    and return array. loadCurrent will automatically array_shift one record
-    on each call.
 
 .. php:method:: prefetchAll
 
@@ -117,6 +117,13 @@ store data.
     If the data store does not support cursors, then fetch all data
     and return array. loadCurrent will automatically array_shift one record
     on each call.
+
+.. php:method:: d(model)
+
+    This methods exists for easily access data, that was passed to setSource.
+    and can be used as a short-cut for ``$model->_table[$this->name]``.
+
+    Method returns reference, so you can change it's contents.
 
 Supporting Conditions
 =====================
