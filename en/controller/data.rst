@@ -22,7 +22,7 @@ The below syntax will associate model with data controller::
     $book -> addField('title');
     $book -> hasOne('Author');
 
-    $book -> setSource('MongoDB', 'book');
+    $book -> setSource('Clusterpoint', 'book');
 
     $book -> load($id);   // retrieve data from MongoDB
 
@@ -37,10 +37,11 @@ Agile Toolkit comes with a number of built-in data controllers:
     data/array
     data/session
     data/pathfinder
+    data/restful
+    data/clusterpoint
     data/memcached
     data/mongo
     data/sql
-    data/restful
     data/dumper
 
 Creating your own Data Controller

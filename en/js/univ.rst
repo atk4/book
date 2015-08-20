@@ -373,12 +373,25 @@ by jQuery. Normally you would probably want to have your own buttons inside
 frame instead.
 
 
-successMessage(msg)
+successMessage(msg, [timeout])
 -------------------
 
 Displays a Growl-style message notifying user that some action was completed
-successfully.
+successfully. Timeout is 8000 by default, specifies how long the message
+will be visible before it disapears.
 
+.. note:: If you are not using Agile CSS layout in your HTML, this method
+    will generate alert().
+
+successMessage(msg, [timeout])
+-------------------
+
+Displays a Growl-style error message notifying user of the error.
+If timeout is not specified, the message will remain until user will
+close it.
+
+.. note:: If you are not using Agile CSS layout in your HTML, this method
+    will generate alert().
 
 getFrameOpener
 --------------
