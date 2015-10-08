@@ -102,7 +102,7 @@ example 2
     if($f->isSubmitted()){
         // manually displaying error message
         if($f->get('email')=='test@example.com'){
-            return $f_email->displayFieldError('Choose other email');
+            return $f->getElement('email')->displayFieldError('Choose other email');
         }
     }
 
