@@ -289,8 +289,8 @@ query for our expression:
 
 ::
 
-    $q=$this->add('Model_Book',array('alias'=>'b'))->count();
-    $m=$this->add('Model_Book',array('alias'=>'a'));
+    $q=$this->add('Model_Book',array('table_alias'=>'b'))->count();
+    $m=$this->add('Model_Book',array('table_alias'=>'a'));
     $m->addExpression('cnt')->set($q
         ->where($q->getField('author_id'),
             $m->getElement('author_id')
@@ -300,9 +300,9 @@ This might seem confusing, let's clean it up:
 
 ::
 
-    $m=$this->add('Model_Book',array('alias'=>'a'));
+    $m=$this->add('Model_Book',array('table_alias'=>'a'));
     $m->addExpression('cnt')->set(
-    $m->newInstance(array('alias'=>'b'))
+    $m->newInstance(array('table_alias'=>'b'))
         ->addCondition('author_id',$m->getElement('author_id'))
         ->count()
     );
