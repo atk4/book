@@ -116,19 +116,25 @@ chapters.
 Connecting to the database
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To connect to the database you need to call :php:class:`App_CLI::dbConnect`.
-For this method to work without any arguments, you need to specify DSN
-(connection info) in config.php file. Alternatively you can also specify
-DSN as an argument, although be advised that if you use passwords inside
-GET argument, they will be visible on exception screen, when your
-database is unreachable. You can disable error output on the screen, see
-chapter for "Application" for more information.
+To connect to the database you need to call :php:class:`App_CLI::dbConnect`
+from the init() method of your application class. This method to work without
+any arguments. You will have to specify DSN
+(connection info) in config.php file:
 
--  Specifying DSN
--  Using different connection modes
--  Counting number of queries in application
--  Using multiple connections
--  Connecting to noSQL databases
+``$config['dsn'] = 'mysql://root:root@127.0.0.1/employees';``
 
-====================================
+The following video (https://www.youtube.com/embed/mJY-xUTeOKw) will walk you
+through a basic set-up of a database.
 
+.. raw:: html
+
+   <iframe width="420" height="315" src="https://www.youtube.com/embed/mJY-xUTeOKw" frameborder="0" allowfullscreen></iframe>
+
+
+
+.. 
+    -  Specifying DSN
+    -  Using different connection modes
+    -  Counting number of queries in application
+    -  Using multiple connections
+    -  Connecting to noSQL databases

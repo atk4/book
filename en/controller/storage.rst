@@ -8,8 +8,8 @@ Storage Controller
 
  .. todo:: UNDER CONSTRUCTION
 
-Binary (or text) files are not normally stored inside a regular database.
-Instead they are stored through a 3rd party file storage service such as Amazon S3
+Binary files such as images are not normally stored inside a regular database.
+Instead they need to be stored in a 3rd party file storage service such as Amazon S3
 or Dropbox. Agile Toolkit supports multiple 3rd party storages:
 
 - ``setStorage('Filestore', $dir);`` - store files on a filesystem
