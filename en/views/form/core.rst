@@ -20,8 +20,8 @@ addField can be called in various ways::
 
     $form->addField('title');
     $form->addField('Line', 'title');
-    $form->addfield('Line', ['name'=>'title']);
-    $form->addfield('Line', ['name'=>'title'], 'Title');
+    $form->addField('Line', ['name'=>'title']);
+    $form->addField('Line', ['name'=>'title'], 'Title');
 
 Although any of the lines above will produce exactly same result.
 
@@ -36,7 +36,7 @@ When adding a field, method will return instance of :php:class:`Form_Field`.
 Chaining additional calls can help you change the way how the field is
 working::
 
-    $form->addfield('title')->validateNotNull();
+    $form->addField('title')->validateNotNull();
 
 As mentioned before, form will submit itself through AJAX. You can switch
 this off with js_widget property:
