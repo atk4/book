@@ -98,7 +98,7 @@ View with Template
 
 Create file ``shared/templates/view/mytemplate.html``::
 
-    <div id="{_name}">
+    <div id="{$_name}">
     Roses are {rose_color}Red{/}, Violets are {violet_color}Blue{/}.
     I love {$Target}.
     </div>
