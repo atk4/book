@@ -122,9 +122,12 @@ a class.
     }
 
     $m=$this->add('Model_User');
-    $m['name']='John';$m['daily_salary']=150;
+    $m['name']         = 'John';
+    $m['daily_salary'] = 150;
 
-    for($day=1;$day<7;$day++) $m->goToWork()
+    for($day=1; $day<7; $day++) {
+        $m->goToWork();
+    }
     $m->paySalary();
 
 As you see in the example, model User's model combines definition of the
