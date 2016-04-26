@@ -729,10 +729,12 @@ methods in any order and has a straightforward syntax::
 
     $q = $db->dsql()->table('user');
     $q->where($q->orExpr()
-        ->where('id',1)
+        ->where('id','=',1)
+        ->or()
         ->where($q->andExpr()
-        ->where('age','>',25)
-        ->where('votes','>',100)
+            ->where('age','>',25)
+            ->and()
+            ->where('votes','>',100)
         )
     );
     $users = $q->get();
@@ -754,4 +756,15 @@ methods in any order and has a straightforward syntax::
     $q=$db->dsql()->table('users');
     $q->set('votes',$q->expr('votes+1'));
     $q->update();
+
+.. note::
+
+    difficult to read the sql, maybe better with ->or() and ->and()
+    
+    $q = $db->dsql()->table('user');
+    $q->where('id','=',1)
+         ->or( $q->expr('age'  ,'>',25)
+                  ->and('votes','>''100)    
+    );
+    $users = $q->get();
 
