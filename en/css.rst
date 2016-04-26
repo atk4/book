@@ -38,6 +38,18 @@ atk-jackscrew, etc)::
         </div>
     </div>
 
+.. note::
+     
+     Class-names could be simplified a lot using the syntax from semantic-ui.com
+     example above would look like this without loosing any features, only the
+     css file would need to adopt to the new syntax: 
+     
+     <div class="ui cells gutter large box swatch yellow">
+         <div class="ui cell valign middle jackscrew">
+       
+     and in css file you limit the selectors with 
+     .ui.cells and make it unique, so .cells can be used independently
+     read documentation of semantic-ui.com to understand how it works. 
 
 Using Extra CSS
 ===============
