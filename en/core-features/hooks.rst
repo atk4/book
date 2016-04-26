@@ -121,7 +121,17 @@ call a method on the handler with the same name as the hook spot:
 
      $this->addHook('requestComplete', array($this, 'requestComplete'));
 
+..  note::
+     it could be even shorter:
+     $this->addHook('requestComplete'); 
+     
+     because it is called on $this, which could be default value for 
+     second parameter. are there hooks which don't call a function ?
+     maybe not, because a hook is used to call a function or closure. 
+     so setting default of $callable to $this should be fine. 
+
 Hook Arguments
+
 --------------
 
 Both ``hook()`` and ``addHook()`` can pass arguments to the callback
