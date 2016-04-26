@@ -1,15 +1,7 @@
 Validation
 ----------
 
-Agile Toolkit provides a unified way to perform validation. Validation
-can be performed in 3 ways:
-
--  validateField() evail
--  validate hook
--  onSubmit() validation
-
-Additionally you can use jQuery widget for client-side validation or
-filtering.
+Agile Toolkit provides a multitude of ways to perform validation.
 
 ## Server-side Validation
 -------------------------
@@ -20,8 +12,8 @@ validation is done in the browser, it must also be performed on the
 server too. Problem here is that browser executes JavaScript and server
 executes PHP.
 
-To produce two set of validaiton codes some framework define a number of
-validatiors which are capable of generating both — server and client
+To produce two sets of validation codes some framework define a number of
+validators which are capable of generating both — server and client
 side code and perform identical validation. Agile Toolkit follows
 different approach.
 
@@ -31,29 +23,127 @@ contins error, then it will be highlighted without reloading page and
 potentially loosing some of the data. This approach combines benefits of
 both server side validation and JavaScript field error highlighting.
 
-Using validateField()
-~~~~~~~~~~~~~~~~~~~~~
+Using callback with $field->validateField() method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you do not mind passing PHP code to be evaluated, than this is the
-easiest way to define form validators. First argument contains teh code
-which will be eval()'ed. You can reference field through ``$this`` and
-access current value through ``$this->get();``
+easiest way to define form validators. You can pass a callback method 
+to the validateField() method in order to validate the field value and 
+return a string if validation fail. The returned string will
+be display as an error in your form display.
 
-Checking Inside isSubmitted() Condition
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Example using an anonymous function:
 
-Method ``isSubmitted()`` loads data from ``$_POST`` into form ``$f``.
-Another common place to perform validation is inside the ``if()`` block
-which checks for form submission.
+::
+	$form = $this->add('Form');
+	$form->addField('line', 'name')
+		  ->validateField( function( $field )
+			{ 
+				if( !$field->get() )
+					return 'Name is mandatory'; 
+			});
+		   		
+Same can be achieve using a class method.  
 
-Using validate Hook
-~~~~~~~~~~~~~~~~~~~
+:: 
+	$form->addField('line', 'name')->validateField( array( $this, 'validateName' );
+					
+					
+Defining the class method:
 
-Hooks are internal mechanism of Agile Toolkit to inject code into
-object's method. Each form have it's own "validate" hook. You can use
-this approach to inject a code to be performed at validation stage.
+:: 
+	function validateName( $field )
+	{
+		if( !$field->get() )
+					return 'Name is mandatory'; 
+	}     
 
-*This approach semantics might change.*
+
+Using the $field->validateNotNull() method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As the name state, this method will check if a field value as been set. 
+It also accept one string parameter for error display.
+
+::
+	$form = $this->add('Form');
+		
+	//Check if field has a value.
+	$form->addField('line','name')->validateNotNull( 'Name is mandatory' );
+
+
+Using Controller_Validator with $field->validate( $rule ) method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Validation done this way take advantage of the Controller_Validator class which is described in more detail here
+	.. _Controller Validator: http://book.agiletoolkit.org/controller/validator.html
+
+Using this controller, it is possible to pass a set of rule to the validate() method that will be use for validating the field value.
+
+::
+	$form = $this->add('Form');
+	
+	//Check if field value is greater than 1000 and display an error msg if not.
+	$form->addField('line','large_number')->validate('>1000?is not large enough');
+	
+	//Check if field has a value.
+	$form->addField('line','name')->validate('required');
+
+
+Using Controller_Validator with $form->validate( $rule ) method
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This also uses Controller_Validator, but calls it through $form->validate()
+This method allows you to define multiple rules with a single call and is directly passed to the validator is() method. 
+Also when calling through $form->validate(), this also binds validation to the form 'validate' hook.
+
+::
+	$form = $this->add('Form');
+	$form->addField('line','large_number');
+	$form->addField('line', 'name');
+	
+	//Validating using multiple field|rule at once.
+	$form->validate([
+		'large_number|>1000?is not large enough',
+		'name|required'
+	]);
+	
+
+Using Controller_Validator with $field->validate( $callback )
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Controller_Validator also supports your own callbacks method via anonymous or class method.
+The anonymous or class method will receive the validator object and the field value as method parameters.
+
+::
+	$form = $this->add('Form');
+
+	$form->addField('line','large_number')
+		->validate( function( $validator, $value ){
+			if( $value < 1000 )
+				$validator->fail( 'is not large enough' ); 
+		});
+
+
+Using Form 'post-validate' hook
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Finally, you may also use the form 'post-validate' hook via an anonymus or class method callback.
+The callback method will receive the form object as a parameter. This hook is fire after form submission
+and fields are loaded with data value.
+
+::
+	$form = $this->add('Form');
+	$form->addField('line','large_number');
+	$form->addField('line', 'name');
+	
+	$form->addHook( 'post-validate', function( $form ) {
+		if( !$form['name'] )
+				$f->error( 'name', 'Name is mandatory' );
+		if( !$form['large_number'] > 1000 )
+				$f->error('name','Number is not large enough');
+	});
+
 
 ## Client-side validation
 -------------------------
@@ -71,66 +161,3 @@ introduce bindings for field validation.
             if(t != this.value)this.value=t;
         });
     }
-
-Form Validation Examples
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-example 1
-
-::
-
-    $f=$page->add('Form');
-
-    $f->addField('line','email')
-        ->validateNotNull()
-        ->validateField(
-            'filter_var($this->get(), FILTER_VALIDATE_EMAIL)');
-
-    $f->addSubmit();
-
-example 2
-
-::
-
-    $f=$page->add('Form');
-
-    $f_email=$f->addField('line','email')
-        ->validateNotNull()
-        ->set('test@example.com');
-
-    $f->addSubmit();
-    if($f->isSubmitted()){
-        // manually displaying error message
-        if($f->get('email')=='test@example.com'){
-            return $f_email->displayFieldError('Choose other email');
-        }
-    }
-
-example 3
-
-::
-
-    $f=$page->add('Form');
-
-    $f_email=$f->addField('line','email')
-        ->validateNotNull()
-        ->set('test@example.com');
-
-    // Adding validation hook through closure
-    $f_email->addHook('validate',function() use ($f_email){
-        if($f_email->get()=='test@example.com')
-            $f_email->displayFieldError('Choose other email');
-    });
-
-    $f->addSubmit();
-
-example 4
-
-::
-
-    $f=$page->add('Form');
-
-    // JavaScript-based validation
-    $f->addField('line','age')->js(true)
-        ->univ()->numericField();
-
