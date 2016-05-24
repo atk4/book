@@ -5,6 +5,8 @@
 SPHINXOPTS    =
 ifeq ($(UNAME),Darwin)
 	SPHINXBUILD   = sphinx-build
+else if ($(UNAME),Linux)
+	SPHINXBUILD = sphinx-build
 else
 	SPHINXBUILD   = /usr/lib/python-exec/python2.7/sphinx-build
 endif
