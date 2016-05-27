@@ -61,11 +61,92 @@ Agile Toolkit development focuses on 3 steps in your application building:
 Agile Toolkit attempts to simplify each step. To demonstrate with an example, we will build
 a very simple a Web User Interface for entering and managing a List of Books in a library.
 
+For the first demonstration it is best to run the built-in web server. This web server
+is located in the Agile Toolkit installation directory and is started with:
+
+* Mac/Linux: ./run.sh
+* Windows: ./run.bat
+
+Then point your browser at localhost:8888 and you are up and running.
+
+The installed directories
+-------------------------
+
+This very first example assumes you have downloaded and untarred the 
+agiletoolkit-4.3.x.tgz file on your local machine. This has created a 
+directory structure as shown below:
+
+.. figure:: figures/sandbox_folders.png
+
+The downloaded installation contains two interfaces, Admin and Frontend. 
+An interface is a way to interact with your application. 
+
+The Admin interface is written as a complete application including a Menu, 
+Dashboard and some administrative tools.  The Frontend interface on the 
+other hand is completely bare and does not even include the Javascript 
+interface by default.
+
+In this installation, both Admin and Frontend contain the same subdirectories: 
+lib, page and public. For this demonstration, we'll use the Admin interface. 
+It will put some additional objects and menus on the page, but that is fine.
+
+It should be understood that the Frontend interface is not used in this 
+demonstration.
+
+The subdirectories in each interface directory contain these source files:
+
+* lib: All class libraries, Forms, Views, Models etc. Each class is put it its
+  own subdirectory. Forms go in lib/Form, models go in lib/Model. The class name
+  and subdirectory location are tied to each other.
+* page: All page source files.
+* public: Contains additional files which must be publicly accessible, like CSS,
+  fonts, images etc. It also holds the index file which is the very first file to
+  load for your application. This directory is the *only* directory publicly 
+  accessible.
+
+As the project grows, more subdirectories will be added to this tree.
+
+The Vendor directory contains the Agile Toolkit framework tree. It is located 
+in vendor/atk4/atk4. If you had cloned atk4 from Github, it should have been 
+placed in this directory. However, the framework was already included in the 
+installation. If you read older documentation, (< 4.3) the location of the 
+framework tree is different.
+
+Finally, note that the top-level directory, agiletoolkit, acts as the project 
+directory for this demonstration project. Each different project has basically 
+the same directory structure, with your project name as top-level directory.
+In each project, the complete Agile Toolkit is included in vendor/atk4/atk4.
+
+The first application
+=====================
+
+1. Hello World
+--------------
+
+The mandatory first example is of course to display "Hello World".
+
+.. tip:: Note that in Agiletoolkit this is not the recommended way to 
+    display this message. More on that in User Interface (Views) 
+
+To get this into your web application, open the file admin/page/index.php
+and change this::
+
+    $this->add('View_Box')
+        ->setHTML('Welcome to your new Web App Project. Get started by opening '.
+            '<b>admin/page/index.php</b> file in your text editor and '.
+            '<a href="http://book.agiletoolkit.org/" target="_blank">Reading '.
+            'the documentation</a>.');
+
+into this::
+
+    $this->add('View_Box')->setHTML('Hello World');
+
+Congratulations. You just coded your first Agile Toolkit application.
 
 1. Create a Model
-------------
+-----------------
 
-Create a file shared/lib/Model/Book.php::
+Create a file admin/lib/Model/Book.php::
 
     class Model_Book extends Model {
 
@@ -89,23 +170,24 @@ Create a file shared/lib/Model/Book.php::
     the data is physically located (PHP Session in our example).
 
 2. Build Web User Interface
-------------------------
+---------------------------
 
-Because user will interract with your web application through the browser,
+Because user will interact with your web application through the browser,
 he needs User Interface. The UI Framework in Agile Toolkit is implemented
-using a varietty of "View" objects.
+using a variety of "View" objects.
 
 One of the views is called "Page" and represents a URL user can navigate to.
 Another View is a CRUD (Record Manager UI allowing to create update or delete
 records).
 
-To allow user to interract, you just need to add "CRUD" into a "Page". Open file
-admin/page/index.php and add::
+To allow user to interact, you just need to add "CRUD" into a "Page". Open file
+admin/page/index.php and replace the page_index class with this one::
 
     class page_index extends Page {
         function init() {
             parent::init();
 
+			$this->title='My Books';
             $crud = $this->add('CRUD');
             $crud->setModel('Book');
         }
@@ -113,8 +195,7 @@ admin/page/index.php and add::
 
 Navigate to admin/public/ and you should see your ``CRUD`` in action.
 
-.. todo::
-    Add a sceenshot here
+.. figure:: figures/screenshot_crud_welcome.png
 
 Explanation
 -----------
