@@ -143,7 +143,7 @@ into this::
 
 Congratulations. You just coded your first Agile Toolkit application.
 
-1. Create a Model
+2. Create a Model
 -----------------
 
 Create a file admin/lib/Model/Book.php::
@@ -169,7 +169,7 @@ Create a file admin/lib/Model/Book.php::
     PHP method calls to describe model structure, it's relationship and where
     the data is physically located (PHP Session in our example).
 
-2. Build Web User Interface
+3. Build Web User Interface
 ---------------------------
 
 Because user will interact with your web application through the browser,
